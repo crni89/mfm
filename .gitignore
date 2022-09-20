@@ -1,0 +1,6 @@
+backend/dist/
+backend/logs/
+backend/node_modules/
+backend/src/config.mail.ts
+backend/static/uploads/
+temp/
