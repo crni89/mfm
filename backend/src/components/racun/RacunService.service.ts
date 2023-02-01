@@ -38,7 +38,7 @@ class RacunService extends BaseService<RacunModel, IRacunOptions> {
             racun.deteId         = +data?.dete_id;
             
             if(options.loadDete){
-                racun.dete = await this.services.dete.getById(racun.deteId,{loadRoditelj: false});
+                racun.dete = await this.services.dete.getById(racun.deteId,{loadRoditelj: false, loadPredracun:false});
             }
 
             resolve(racun);

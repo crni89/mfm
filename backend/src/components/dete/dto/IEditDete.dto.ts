@@ -15,7 +15,7 @@ export interface IEditDeteDto {
     datumPolaska?: string;
     subvencija?: boolean;
     popust?: string;
-    porodicniStatus?: string;
+    pstatus?: string;
     grupa?: string;
     objekat?: string;
     ugovor?: string;
@@ -33,7 +33,7 @@ export interface IEditDete extends IServiceData {
     popust?: string;
     objekat?: string;
     ugovor?: string;
-    porodicni_status?: string;
+    pstatus?: string;
     grupa?: string;
 }
 
@@ -90,7 +90,7 @@ const EditDeteValidator = ajv.compile({
             minLength: 2,
             maxLength: 50,
         },
-        porodicniStatus: {
+        pstatus: {
             type: "string",
             minLength: 2,
             maxLength: 50,

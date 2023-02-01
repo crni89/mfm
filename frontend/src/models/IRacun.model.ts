@@ -7,7 +7,7 @@ export default interface IRacun {
     datumOd: string;
     datumDo: string;
     tip: string;
-    brojFakture: string;
+    brojFakture: number;
     godina: string;
     pozivNaBroj: string;
     iznos: string;

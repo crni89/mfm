@@ -152,7 +152,7 @@ export default function AdminGrupeLista() {
                         <thead>
                             <tr>
                                 <th className="category-row-id">ID</th>
-                                <th>Name</th>
+                                <th>Ime</th>
                             </tr>
                         </thead>
                         <tbody>

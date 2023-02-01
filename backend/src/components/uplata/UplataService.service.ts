@@ -30,7 +30,7 @@ class UplataService extends BaseService<UplataModel, IUplataOptions> {
             uplata.deteId         = +data?.dete_id;
             
             if(options.loadDete){
-                uplata.dete = await this.services.dete.getById(uplata.deteId,{loadRoditelj: false});
+                uplata.dete = await this.services.dete.getById(uplata.deteId,{loadRoditelj: false, loadPredracun:false});
             }
 
             resolve(uplata);

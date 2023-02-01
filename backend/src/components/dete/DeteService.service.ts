@@ -15,16 +15,24 @@ import * as mysql2 from "mysql2/promise"
 
 export interface IDeteAdapterOptions extends IAdapterOptions {
     loadRoditelj: boolean;
+    loadPredracun: boolean;
 }
 
 export const DefaultDeteAdapterOptions: IDeteAdapterOptions = {
-    loadRoditelj:true
+    loadRoditelj:true,
+    loadPredracun:true
 }
 
 interface RoditeljDeteInterface {
     roditelj_dete_id: number;
     dete_id: number;
     roditelj_id: number;
+}
+
+interface PredracunDeteInterface {
+    predracun_dete_id: number;
+    dete_id: number;
+    predracun_id: number;
 }
 
 export default class DeteService extends BaseService<DeteModel, IDeteAdapterOptions> {
@@ -49,7 +57,7 @@ export default class DeteService extends BaseService<DeteModel, IDeteAdapterOpti
             dete.objekat        = data?.objekat;
             dete.ugovor         = data?.ugovor;
             dete.grupa          = data?.grupa;
-            dete.porodicniStatus = data?.porodicni_status;
+            dete.pstatus        = data?.pstatus;
             
             // if (options.loadGrupa) {
             //     dete.grupe = await this.services.grupa.getAllByDeteId(dete.deteId, {});
@@ -69,6 +77,10 @@ export default class DeteService extends BaseService<DeteModel, IDeteAdapterOpti
 
             if (options.loadRoditelj) {
                 dete.roditelji = await this.services.roditelj.getAllByDeteId(dete.deteId, {loadDete:false});
+            }
+
+            if (options.loadPredracun) {
+                dete.predracuni = await this.services.predracun.getAllByDeteId(dete.deteId, {loadDete: false});
             }
 
 
@@ -99,20 +111,20 @@ export default class DeteService extends BaseService<DeteModel, IDeteAdapterOpti
         })
     }
 
-    async addDetePorodicniStatus(data: IDetePorodicniStatus): Promise<number> {
-        return new Promise((resolve, reject) => {
-            const sql: string = "INSERT dete_porodicni_status SET dete_id = ?, porodicni_status_id = ?;";
+    // async addDetePorodicniStatus(data: IDetePorodicniStatus): Promise<number> {
+    //     return new Promise((resolve, reject) => {
+    //         const sql: string = "INSERT dete_porodicni_status SET dete_id = ?, porodicni_status_id = ?;";
 
-            this.db.execute(sql, [ data.dete_id, data.porodicni_status_id ])
-            .then(async result => {
-                const info: any = result;
-                resolve(+(info[0]?.insertId));
-            })
-            .catch(error => {
-                reject(error);
-            });
-        })
-    }
+    //         this.db.execute(sql, [ data.dete_id, data.porodicni_status_id ])
+    //         .then(async result => {
+    //             const info: any = result;
+    //             resolve(+(info[0]?.insertId));
+    //         })
+    //         .catch(error => {
+    //             reject(error);
+    //         });
+    //     })
+    // }
     
     async addDeteObjekat(data: IDeteObjekat): Promise<number> {
         return new Promise((resolve, reject) => {
@@ -221,13 +233,10 @@ export default class DeteService extends BaseService<DeteModel, IDeteAdapterOpti
 
     async deleteById(deteId: number): Promise<{}> {
         return new Promise(resolve => {
-            this.deleteAllDeteUgovorByDeteId(deteId)
-            .then(() => this.deleteAllDetePorodicniStatusByDeteId(deteId))
-            .then(() => this.deleteAllDeteObjekatByDeteId(deteId))
-            .then(() => this.deleteAllDeteGrupaByDeteId(deteId))
-            .then(() => this.deleteAllRoditeljDeteByDeteId(deteId))
+            this.deleteAllRoditeljDeteByDeteId(deteId)
             .then(() => this.getById(deteId, {
-                loadRoditelj:false
+                loadRoditelj:false,
+                loadPredracun:false
             }))
             .then(dete => {
                 if (dete === null) throw { status: 404, message: "Dete not found!" }
@@ -250,65 +259,65 @@ export default class DeteService extends BaseService<DeteModel, IDeteAdapterOpti
         })
     }
 
-    private async deleteAllDeteUgovorByDeteId(deteId: number): Promise<true> {
-        return new Promise(resolve => {
-            const sql = `DELETE FROM dete_ugovor WHERE dete_id = ?;`;
-            this.db.execute(sql, [ deteId ])
-            .then(() => {
-                resolve(true);
-            })
-            .catch(error => {
-                throw {
-                    message: error?.message ?? "Could not delete dete ugovor!",
-                }
-            });
-        })
-    }
+    // private async deleteAllDeteUgovorByDeteId(deteId: number): Promise<true> {
+    //     return new Promise(resolve => {
+    //         const sql = `DELETE FROM dete_ugovor WHERE dete_id = ?;`;
+    //         this.db.execute(sql, [ deteId ])
+    //         .then(() => {
+    //             resolve(true);
+    //         })
+    //         .catch(error => {
+    //             throw {
+    //                 message: error?.message ?? "Could not delete dete ugovor!",
+    //             }
+    //         });
+    //     })
+    // }
 
-    private async deleteAllDetePorodicniStatusByDeteId(deteId: number): Promise<true> {
-        return new Promise(resolve => {
-            const sql = `DELETE FROM dete_porodicni_status WHERE dete_id = ?;`;
-            this.db.execute(sql, [ deteId ])
-            .then(() => {
-                resolve(true);
-            })
-            .catch(error => {
-                throw {
-                    message: error?.message ?? "Could not delete dete porodicni status!",
-                }
-            });
-        })
-    }
+    // private async deleteAllDetePorodicniStatusByDeteId(deteId: number): Promise<true> {
+    //     return new Promise(resolve => {
+    //         const sql = `DELETE FROM dete_porodicni_status WHERE dete_id = ?;`;
+    //         this.db.execute(sql, [ deteId ])
+    //         .then(() => {
+    //             resolve(true);
+    //         })
+    //         .catch(error => {
+    //             throw {
+    //                 message: error?.message ?? "Could not delete dete porodicni status!",
+    //             }
+    //         });
+    //     })
+    // }
 
-    private async deleteAllDeteObjekatByDeteId(deteId: number): Promise<true> {
-        return new Promise(resolve => {
-            const sql = `DELETE FROM dete_objekat WHERE dete_id = ?;`;
-            this.db.execute(sql, [ deteId ])
-            .then(() => {
-                resolve(true);
-            })
-            .catch(error => {
-                throw {
-                    message: error?.message ?? "Could not delete dete objekat!",
-                }
-            });
-        })
-    }
+    // private async deleteAllDeteObjekatByDeteId(deteId: number): Promise<true> {
+    //     return new Promise(resolve => {
+    //         const sql = `DELETE FROM dete_objekat WHERE dete_id = ?;`;
+    //         this.db.execute(sql, [ deteId ])
+    //         .then(() => {
+    //             resolve(true);
+    //         })
+    //         .catch(error => {
+    //             throw {
+    //                 message: error?.message ?? "Could not delete dete objekat!",
+    //             }
+    //         });
+    //     })
+    // }
 
-    private async deleteAllDeteGrupaByDeteId(deteId: number): Promise<true> {
-        return new Promise(resolve => {
-            const sql = `DELETE FROM dete_grupa WHERE dete_id = ?;`;
-            this.db.execute(sql, [ deteId ])
-            .then(() => {
-                resolve(true);
-            })
-            .catch(error => {
-                throw {
-                    message: error?.message ?? "Could not delete dete grupa!",
-                }
-            });
-        })
-    }
+    // private async deleteAllDeteGrupaByDeteId(deteId: number): Promise<true> {
+    //     return new Promise(resolve => {
+    //         const sql = `DELETE FROM dete_grupa WHERE dete_id = ?;`;
+    //         this.db.execute(sql, [ deteId ])
+    //         .then(() => {
+    //             resolve(true);
+    //         })
+    //         .catch(error => {
+    //             throw {
+    //                 message: error?.message ?? "Could not delete dete grupa!",
+    //             }
+    //         });
+    //     })
+    // }
 
     private async deleteAllRoditeljDeteByDeteId(deteId: number): Promise<true> {
         return new Promise(resolve => {
@@ -325,7 +334,7 @@ export default class DeteService extends BaseService<DeteModel, IDeteAdapterOpti
         })
     }
 
-    public async getAllByRoditeljId(roditeljId: number, options: IDeteAdapterOptions = {loadRoditelj:false}): Promise<DeteModel[]> {
+    public async getAllByRoditeljId(roditeljId: number, options: IDeteAdapterOptions = {loadRoditelj:false, loadPredracun:false}): Promise<DeteModel[]> {
         return new Promise((resolve, reject) => {
             this.getAllFromTableByFieldNameAndValue<RoditeljDeteInterface>("roditelj_dete", "roditelj_id", roditeljId)
             .then(async result => {
@@ -360,5 +369,26 @@ export default class DeteService extends BaseService<DeteModel, IDeteAdapterOpti
     //         })
     //     })
     // }
+
+    public async getAllByPredracunId(predracunId: number, options: IDeteAdapterOptions = {loadRoditelj:false, loadPredracun:false}): Promise<DeteModel[]> {
+        return new Promise((resolve, reject) => {
+            this.getAllFromTableByFieldNameAndValue<PredracunDeteInterface>("predracun_dete", "predracun_id", predracunId)
+            .then(async result => {
+                const deteIds = result.map(rd => rd.dete_id);
+
+                const deca: DeteModel[] = [];
+
+                for (let deteId of deteIds) {
+                    const dete = await this.getById(deteId, options);
+                    deca.push(dete);
+                }
+
+                resolve(deca);
+            })
+            .catch(error => {
+                reject(error);
+            });
+        });
+    }
 
 }

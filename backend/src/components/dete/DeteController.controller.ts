@@ -61,11 +61,12 @@ class DeteController extends BaseController {
             objekat: data.objekat,
             ugovor: data.ugovor,
             grupa: data.grupa,
-            porodicniStatus: data.porodicniStatus
+            pstatus: data.pstatus
         })
         .then(newDete => {
             return this.services.dete.getById(newDete.deteId, {
-                loadRoditelj:true
+                loadRoditelj:true,
+                loadPredracun: true
             });
         })
         .then(async result => {
@@ -136,8 +137,8 @@ class DeteController extends BaseController {
             serviceData.grupa = data.grupa;
         }
         
-        if (data.porodicniStatus !== undefined){
-            serviceData.porodicni_status = data.porodicniStatus;
+        if (data.pstatus !== undefined){
+            serviceData.pstatus = data.pstatus;
         }
 
         this.services.dete.edit(id, serviceData)
@@ -212,7 +213,28 @@ class DeteController extends BaseController {
         const value1 = req.query.objekat;
         const value2 = req.query.ugovor;
 
-        this.services.dete.search('objekat',value1,'ugovor',value2, {loadRoditelj: true})
+        this.services.dete.search('objekat',value1,'ugovor',value2, {loadRoditelj: true, loadPredracun: true})
+        .then(result => {
+            if (result === null) {
+                throw {
+                    status: 404,
+                    message: 'Dete nije pronadjeno!',
+                }
+            }
+
+            res.send(result);
+        })
+        .catch(error => {
+            res.status(500).send(error?.message);
+        });
+    }
+
+    async searchPred(req: Request, res: Response) {
+        const value1 = req.query.objekat;
+        const value2 = req.query.ugovor;
+        const value3 = req.query.status;
+
+        this.services.dete.searchPredracun('objekat',value1,'ugovor',value2, 'status',value3, {loadRoditelj: true, loadPredracun: true})
         .then(result => {
             if (result === null) {
                 throw {

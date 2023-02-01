@@ -7,7 +7,7 @@ export default interface IPredracun {
     datumOd: string;
     datumDo: string;
     tip: string;
-    brojFakture: string;
+    brojFakture: number;
     godina: string;
     pozivNaBroj: string;
     iznos: string;
@@ -15,5 +15,6 @@ export default interface IPredracun {
     valuta: string;
     popust: string;
     deteId: number;
-    dete?: IDete | null;
+    
+    deca?: IDete[];
 }

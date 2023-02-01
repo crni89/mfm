@@ -19,7 +19,7 @@ export default class DeteModel implements IModel {
     popust: string;
     objekat:string;
     ugovor: string;
-    porodicniStatus: string;
+    pstatus: string;
     grupa: string;
 
     // grupe?: GrupaModel[] =[];

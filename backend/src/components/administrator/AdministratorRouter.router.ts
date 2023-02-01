@@ -64,6 +64,7 @@ class AdministratorRouter implements IRouter {
         application.get("/api/dete",                                    deteController.getAll.bind(deteController));
 
         application.get("/api/deca",                                    deteController.search.bind(deteController));
+        application.get("/api/decap",                                   deteController.searchPred.bind(deteController));
 
         
         application.get("/api/dete/:id",                                deteController.getById.bind(deteController));

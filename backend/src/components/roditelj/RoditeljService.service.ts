@@ -40,7 +40,7 @@ class RoditeljService extends BaseService<RoditeljModel, IRoditeljAdapterOptions
             roditelj.nosilacUgovora = +data?.nosilac_ugovora === 1;
             
             if (options.loadDete) {
-                roditelj.deca = await this.services.dete.getAllByRoditeljId(roditelj.roditeljId, {loadRoditelj:false});
+                roditelj.deca = await this.services.dete.getAllByRoditeljId(roditelj.roditeljId, {loadRoditelj:false, loadPredracun:false});
             }
 
 

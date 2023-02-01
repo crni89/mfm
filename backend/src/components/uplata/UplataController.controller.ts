@@ -196,7 +196,7 @@ class UplataController extends BaseController {
             return res.status(400).send(AddUplataValidator.errors);
         }
 
-        this.services.dete.getById(deteId, {loadRoditelj: true })
+        this.services.dete.getById(deteId, {loadRoditelj: true, loadPredracun:false })
             .then(result => {
                 if (result === null) {
                     return res.sendStatus(404);

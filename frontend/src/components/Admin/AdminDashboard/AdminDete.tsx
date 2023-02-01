@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import IDete from '../../../models/IDete.model';
 import { api } from '../../../api/api';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faCheckCircle, faCircle } from '@fortawesome/free-regular-svg-icons';
+import ConfirmAction from '../../../helpers/ConfirmAction';
 
 
 export interface IAdminDeteUrlParams extends Record<string, string | undefined>{
@@ -21,9 +22,12 @@ export default function AdminDete(props: IAdminDeteProperties) {
     const[dete,setDete] = useState<IDete|null>(null);
     const [ errorMessage, setErrorMessage ] = useState<string>("");
     const [ loading, setLoading ]           = useState<boolean>(false);
+    const [ deleteRequested, setDeleteRequested ] = useState<boolean>(false);
 
     const params = useParams<IAdminDeteUrlParams>();
     const deteId = props.deteId ?? params.id;
+
+    const navigate = useNavigate();
 
     useEffect(() =>{
         setLoading(true);
@@ -42,6 +46,17 @@ export default function AdminDete(props: IAdminDeteProperties) {
             setLoading(false);
         });
     }, [deteId]);
+
+    function deleteDete() {
+        api("delete", "/api/dete/" + deteId, "administrator")
+        .then(res => {
+            if (res.status === 'error') {
+                return setErrorMessage("Could not edit this grupa!");
+            }
+
+            navigate("/admin/dashboard/deca/list");
+        })
+    }
 
   return (
     <motion.div className="card"
@@ -161,7 +176,7 @@ export default function AdminDete(props: IAdminDeteProperties) {
                                     <div className="form-group mb-3">
                                         <label className="mb-2">Porodicni status</label>
                                         <div className="input-group">
-                                            <input className="form-control" value={ dete?.porodicniStatus }disabled/>
+                                            <input className="form-control" value={ dete?.pstatus }disabled/>
                                         </div>
                                     </div>
                                     <div className="form-group">
@@ -172,6 +187,19 @@ export default function AdminDete(props: IAdminDeteProperties) {
                                             ? <p className='form-control'><FontAwesomeIcon icon={faCheckCircle}/> Da</p>
                                             : <p className='form-control'><FontAwesomeIcon icon={ faCircle } /> Ne</p>
                                             }
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <div className="input-group" style={{marginTop: '30px'}}>
+                                            <button className='btn btn-danger px-4' onClick={ () => setDeleteRequested(true) }>
+                                                Obrisi
+                                            </button>
+                                            { deleteRequested && <ConfirmAction
+                                                title="Potvrdite da hocete da obrisete dete"
+                                                message={ "Da li ste sigurni da hocete da obrisete: \"" + dete.imePrezime + "\"?" }
+                                                onNo={ () => setDeleteRequested(false) }
+                                                onYes={ () => deleteDete() }
+                                            /> }
                                         </div>
                                     </div>
                                 </div>    

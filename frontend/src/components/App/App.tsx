@@ -20,6 +20,7 @@ import AdminRoditelj from '../Admin/AdminDashboard/AdminRoditelj';
 import AdminRoditeljEdit from '../Admin/AdminDashboard/AdminRoditeljEdit';
 import AdminDeteFinansije from '../Admin/AdminDashboard/AdminDeteFinansije';
 import Pretraga from '../Admin/AdminDashboard/Pretraga';
+import AdminKnjiga from '../Admin/AdminDashboard/AdminKnjiga';
 
 function App() {
   return (
@@ -47,6 +48,8 @@ function App() {
           <Route path="/admin/dashboard/administrator/list" element={ <AdminAdministratorList /> } />
           <Route path="/admin/dashboard/administrator/add" element={ <AdminAdministratorAdd /> } />
           
+          <Route path='/admin/dashboard/knjiga' element={<AdminKnjiga />} />
+
         </Routes>
       </Container>
     </Provider>

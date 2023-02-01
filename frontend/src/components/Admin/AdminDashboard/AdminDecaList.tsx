@@ -23,6 +23,7 @@ interface IAddFinansijeFormState {
     popust: string;
 };
 
+
 type TSetDatum          = { type: "addFinansijeForm/setDatum",          value: string };
 type TSetStatus         = { type: "addFinansijeForm/setStatus",   value: string };
 type TSetDatumOd        = { type: "addFinansijeForm/setDatumOd",   value: string };
@@ -537,28 +538,32 @@ export default function AdminDecaList() {
             <div className="card-title">
                 <div className="row mb-3">
                     <div className="col">
-                        <label htmlFor="objekat-select">Objekat:</label>
-                        <select  id="objekat-select" value={objekat ? objekat.ime : ''} onChange={handleObjekatChange}>
-                            <option value="">Izaberite Objekat</option>
-                            {objekats.map(objekat => (
-                            <option key={objekat.ime} value={objekat.ime}>
-                                {objekat.ime}
-                            </option>
-                            ))}
-                        </select>
+                        <div className="form-group">
+                            <label htmlFor="inputState">Objekat</label>
+                            <select className='form-control' id="inputState" value={objekat ? objekat.ime : ''} onChange={handleObjekatChange}>
+                                <option value="">Izaberite Objekat</option>
+                                {objekats.map(objekat => (
+                                <option key={objekat.ime} value={objekat.ime}>
+                                    {objekat.ime}
+                                </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                     <div className="col">
-                        <label htmlFor="ugovor-select">Ugovor:</label>
-                        <select id="ugovor-select" value={ugovor ? ugovor.ime : ''} onChange={handleUgovorChange}>
-                            <option value="">Izaberite ugovor</option>
-                            {ugovors.map(ugovor => (
-                            <option key={ugovor.ime} value={ugovor.ime}>
-                                {ugovor.ime}
-                            </option>
-                            ))}
-                        </select>
+                        <div className="form-group">
+                            <label htmlFor="ugovor-select">Ugovor</label>
+                            <select className='form-control' id="ugovor-select" value={ugovor ? ugovor.ime : ''} onChange={handleUgovorChange}>
+                                <option value="">Izaberite ugovor</option>
+                                {ugovors.map(ugovor => (
+                                <option key={ugovor.ime} value={ugovor.ime}>
+                                    {ugovor.ime}
+                                </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
-                    <div className="col">
+                    <div className="col mt-4">
                         <button className='btn btn-primary' onClick={search}>Search</button>
                     </div>
                 </div>

@@ -18,5 +18,5 @@ export default class PredracunModel implements IModel {
     deteId: number;
 
     //FKs:
-    dete?: DeteModel = null;
+    deca?: DeteModel[] = [];
 }

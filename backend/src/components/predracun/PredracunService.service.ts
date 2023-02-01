@@ -12,6 +12,12 @@ export const DefaultPredracunOptions: IPredracunOptions = {
     loadDete: true,
 }
 
+interface DetePredracunInterface {
+    predracun_dete_id: number;
+    dete_id: number;
+    predracun_id: number;
+}
+
 class PredracunService extends BaseService<PredracunModel, IPredracunOptions> {
     tableName(): string {
         return "predracun";
@@ -37,8 +43,8 @@ class PredracunService extends BaseService<PredracunModel, IPredracunOptions> {
             predracun.popust         = data?.popust;
             predracun.deteId         = +data?.dete_id;
             
-            if(options.loadDete){
-                predracun.dete = await this.services.dete.getById(predracun.deteId,{loadRoditelj: false});
+            if (options.loadDete) {
+                predracun.deca = await this.services.dete.getAllByPredracunId(predracun.predracunId, {loadRoditelj:false,loadPredracun:false});
             }
 
             resolve(predracun);
@@ -46,8 +52,25 @@ class PredracunService extends BaseService<PredracunModel, IPredracunOptions> {
 
     }
 
-    public async getAllByDeteId(deteId: number){
-        return this.getAllByFieldNameAndValue("dete_id", deteId, DefaultPredracunOptions);
+    public async getAllByDeteId(deteId: number, options: IPredracunOptions = {loadDete:false}): Promise<PredracunModel[]> {
+        return new Promise((resolve, reject) => {
+            this.getAllFromTableByFieldNameAndValue<DetePredracunInterface>("predracun_dete", "dete_id", deteId)
+            .then(async result => {
+                const predracunIds = result.map(pd => pd.predracun_id);
+
+                const predracuni: PredracunModel[] = [];
+
+                for (let predracunId of predracunIds) {
+                    const predracun = await this.getById(predracunId, options);
+                    predracuni.push(predracun);
+                }
+
+                resolve(predracuni);
+            })
+            .catch(error => {
+                reject(error);
+            });
+        });
     }
 
     public async add(data: IAddPredracun): Promise<PredracunModel> {

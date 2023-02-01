@@ -3,6 +3,7 @@ import IObjekat from './IObjekat.model';
 import IUgovor from './IUgovor.model';
 import IPorodicniStatus from './IPorodicniStatus.model';
 import IRoditelj from './IRoditelj.model';
+import IPredracun from './IPredracun.model';
 
 export default interface IDete {
     deteId: number;
@@ -18,11 +19,12 @@ export default interface IDete {
     objekat: string;
     ugovor: string;
     grupa: string;
-    porodicniStatus: string;
+    pstatus: string;
 
     grupe?: IGrupa[];
     objekti?: IObjekat[];
     ugovori?: IUgovor[];
     porodicniStatusi?: IPorodicniStatus[];
     roditelji?: IRoditelj[];
+    predracuni?: IPredracun[];
 }

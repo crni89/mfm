@@ -13,10 +13,11 @@ import { faPrint, faTrash } from "@fortawesome/free-solid-svg-icons";
 import ConfirmAction from "../../../helpers/ConfirmAction";
 import IRacun from '../../../models/IRacun.model';
 import IUplata from '../../../models/IUplata.model';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+import logo from '../../../template/Logo.png';
+import { Document, pdf, Page, Text, StyleSheet, Font, Image, View, } from '@react-pdf/renderer';
+import LoraBold from './pdfFonts/Lora-Bold.ttf';
+import Lora from './pdfFonts/Lora-Regular.ttf';
+import { saveAs } from 'file-saver';
 
 export interface IAdminFinansijeFinansijeUrlParams extends Record<string, string | undefined>{
     id: string
@@ -32,7 +33,7 @@ interface IAddFinansijeFormState {
     datumOd: string;
     datumDo: string;
     tip: string;
-    brojFakture: string;
+    brojFakture: number;
     godina: string;
     pozivNaBroj: string;
     iznos: string;
@@ -46,7 +47,7 @@ interface IEditFinansijeFormState {
     datumOd: string;
     datumDo: string;
     tip: string;
-    brojFakture: string;
+    brojFakture: number;
     godina: string;
     pozivNaBroj: string;
     iznos: string;
@@ -74,7 +75,7 @@ type TSetStatus         = { type: "addFinansijeForm/setStatus",   value: string 
 type TSetDatumOd        = { type: "addFinansijeForm/setDatumOd",   value: string };
 type TSetDatumDo        = { type: "addFinansijeForm/setDatumDo",   value: string };
 type TSetTip            = { type: "addFinansijeForm/setTip",   value: string };
-type TSetBrojfakture    = { type: "addFinansijeForm/setBrojfakture",   value: string };
+type TSetBrojfakture    = { type: "addFinansijeForm/setBrojfakture",   value: number };
 type TSetGodina         = { type: "addFinansijeForm/setGodina",   value: string };
 type TSetPozivNaBroj    = { type: "addFinansijeForm/setPozivNaBroj",   value: string };
 type TSetIznos          = { type: "addFinansijeForm/setIznos",   value: string };
@@ -100,7 +101,7 @@ type TSetStat          = { type: "editFinansijeForm/setStat",   value: string };
 type TSetDatOd         = { type: "editFinansijeForm/setDatOd",   value: string };
 type TSetDatDo         = { type: "editFinansijeForm/setDatDo",   value: string };
 type TSetTi            = { type: "editFinansijeForm/setTi",   value: string };
-type TSetBrojfakt      = { type: "editFinansijeForm/setBrojfakt",   value: string };
+type TSetBrojfakt      = { type: "editFinansijeForm/setBrojfakt",   value: number };
 type TSetGod           = { type: "editFinansijeForm/setGod",   value: string };
 type TSetPozivNaBr     = { type: "editFinansijeForm/setPozivNaBr",   value: string };
 type TSetIzn           = { type: "editFinansijeForm/setIzn",   value: string };
@@ -709,7 +710,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
         datumOd: "",
         datumDo: "",
         tip: "",
-        brojFakture: "",
+        brojFakture: 0,
         godina: "",
         pozivNaBroj: "",
         iznos: "",
@@ -724,7 +725,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
         datumOd: "",
         datumDo: "",
         tip: "",
-        brojFakture: "",
+        brojFakture: 0,
         godina: "",
         pozivNaBroj: "",
         iznos: "",
@@ -801,7 +802,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
         .finally(() =>{
             setLoading(false);
         });
-    }, [deteId, predracun, racun, uplata]);
+    }, [deteId]);
 
     const loadUgovor = () => {
         api("get", "/api/ugovor", "administrator")
@@ -890,7 +891,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
     useEffect(() => {
         loadRacunAll();
         loadPredracunAll();
-    }, [racunAll, predracunAll]);
+    }, []);
 
 
     const openModal = (predracun: IPredracun) => {
@@ -919,6 +920,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
                     throw new Error("Could not add this item! Reason: " + res?.data?.map((error: any) => error?.instancePath + " " + error?.message).join(", "));
                 }
                 setZaShow(false);
+                window.location.reload();
                 return res.data;
             })
         } else if (formState.tip === "Predracun"){
@@ -928,7 +930,9 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
                     throw new Error("Could not add this item! Reason: " + res?.data?.map((error: any) => error?.instancePath + " " + error?.message).join(", "));
                 }
                 setZaShow(false);
+                window.location.reload();
                 return res.data;
+                
             })
         }
     }
@@ -940,6 +944,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
                 throw new Error("Could not add this item! Reason: " + res?.data?.map((error: any) => error?.instancePath + " " + error?.message).join(", "));
             }
             setUpShow(false);
+            window.location.reload();
             return res.data;
         })
     }
@@ -983,7 +988,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
         dispatchEditFormStateAction({ type: "editFinansijeForm/setDatOd", value: selectedPredracun?.datumOd ?? ''});
         dispatchEditFormStateAction({ type: "editFinansijeForm/setDatDo", value: selectedPredracun?.datumDo ?? ''});
         dispatchEditFormStateAction({ type: "editFinansijeForm/setTi", value: selectedPredracun?.tip ?? ''});
-        dispatchEditFormStateAction({ type: "editFinansijeForm/setBrojfakt", value: selectedPredracun?.brojFakture ?? ''});
+        dispatchEditFormStateAction({ type: "editFinansijeForm/setBrojfakt", value: selectedPredracun?.brojFakture ?? 0});
         dispatchEditFormStateAction({ type: "editFinansijeForm/setGod", value: selectedPredracun?.godina ?? ''});
         dispatchEditFormStateAction({ type: "editFinansijeForm/setPozivNaBr", value: selectedPredracun?.pozivNaBroj ?? ''});
         dispatchEditFormStateAction({ type: "editFinansijeForm/setIzn", value: selectedPredracun?.iznos ?? ''});
@@ -998,7 +1003,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
         dispatchEditFormStateAction({ type: "editFinansijeForm/setDatOd", value: selectedRacun?.datumOd ?? ''});
         dispatchEditFormStateAction({ type: "editFinansijeForm/setDatDo", value: selectedRacun?.datumDo ?? ''});
         dispatchEditFormStateAction({ type: "editFinansijeForm/setTi", value: selectedRacun?.tip ?? ''});
-        dispatchEditFormStateAction({ type: "editFinansijeForm/setBrojfakt", value: selectedRacun?.brojFakture ?? ''});
+        dispatchEditFormStateAction({ type: "editFinansijeForm/setBrojfakt", value: selectedRacun?.brojFakture ?? 0});
         dispatchEditFormStateAction({ type: "editFinansijeForm/setGod", value: selectedRacun?.godina ?? ''});
         dispatchEditFormStateAction({ type: "editFinansijeForm/setPozivNaBr", value: selectedRacun?.pozivNaBroj ?? ''});
         dispatchEditFormStateAction({ type: "editFinansijeForm/setIzn", value: selectedRacun?.iznos ?? ''});
@@ -1037,6 +1042,839 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
 
     const racunStrings = racunAll.map((p) => `${p.brojFakture}/${p.godina}`).reverse();
     const racunString = racunStrings.join(', ');
+
+    const handleClick = async () => {
+        const pdfBlob = await pdf(<RacunPdf />).toBlob();
+        saveAs(pdfBlob, 'faktura.pdf');
+    }
+
+    const RacunPdf = () => {
+        Font.register({
+            family: "Lora",
+            src: Lora,
+            format: "truetype",
+          })
+        
+          Font.register({
+            family: "LoraBold",
+            src: LoraBold,
+            format: "truetype",
+          })
+        
+          const styles = StyleSheet.create({
+            page: {
+              marginTop: 40,
+              marginLeft: 40,
+              marginRight: 40,
+              marginBottom: 60,
+            },
+            desniNaslov: {
+              fontFamily: "LoraBold",
+              fontSize: 13,
+              position: "absolute",
+              left: 300,
+              top: 15
+            },
+            desniTekst: {
+              fontFamily: "Lora",
+              fontSize: 13,
+              fontWeight: 400,
+              position: "absolute",
+              left: 300,
+              top: 30
+            },
+            ispodSlikeTekstView: {
+              display: "flex",
+              flexDirection: "row",
+            },
+            ispodSlikeTekstView2: {
+              display: "flex",
+              flexDirection: "row",
+            },
+            ispodSlikeTekstIme: {
+              fontFamily: "Lora",
+              fontSize: 13,
+              // position: "absolute",
+              // top: 150,
+              // left: 20
+              textAlign: "left",
+              marginTop: 15
+            },
+            ispodSlikeTekstIme2: {
+              fontFamily: "LoraBold",
+              fontSize: 13,
+              // position: "absolute",
+              // top: 150,
+              // left: 20
+              textAlign: "left",
+              marginTop: 15,
+              textTransform: "uppercase"
+            },
+            ispodSlikeTekstAd: {
+              fontFamily: "Lora",
+              fontSize: 13,
+              // position: "absolute",
+              // top: 170,
+              // left: 20
+              textAlign: "left",
+              marginTop:5
+            },
+            ispodSlikeTekstAd2: {
+              fontFamily: "LoraBold",
+              fontSize: 13,
+              // position: "absolute",
+              // top: 170,
+              // left: 20
+              textAlign: "left",
+              marginTop:5,
+              textTransform: "uppercase"
+            },
+            ispodDesnogTekstaView:{
+              display: "flex",
+              flexDirection: "row",
+              position: "absolute",
+              left: 300,
+              top: 145
+            },
+            ispodDesnogTekstaView2:{
+              display: "flex",
+              flexDirection: "row",
+              position: "absolute",
+              left: 300,
+              top: 165
+            },
+            ispodDesnogTekstaPro: {
+              fontFamily: "Lora",
+              fontSize: 13,
+              fontWeight: 400,
+              // position: "absolute",
+              // left: 300,
+              // top: 145
+            },
+            ispodDesnogTekstaPro2: {
+              fontFamily: "LoraBold",
+              fontSize: 13,
+              fontWeight: 400,
+              textTransform: "uppercase",
+              // position: "absolute",
+              // left: 300,
+              // top: 145
+            },
+            ispodDesnogTeksta: {
+              fontFamily: "Lora",
+              fontSize: 13,
+              fontWeight: 400,
+              // position: "absolute",
+              // left: 300,
+              // top: 165
+            },
+            ispodDesnogTeksta2: {
+              fontFamily: "LoraBold",
+              fontSize: 13,
+              fontWeight: 400,
+              textTransform: "uppercase",
+              // position: "absolute",
+              // left: 300,
+              // top: 165
+            },
+            logo: {
+              width: 180,
+              height: 130,
+              marginLeft: -10
+            },
+            naslovView: {
+              display: "flex",
+              flexDirection: "row",
+              marginLeft: 155,
+            },
+            naslov: {
+              textAlign: "center",
+              marginTop: 30,
+              fontFamily: "LoraBold",
+            },
+            textIspodNaslovaView: {
+              display: "flex",
+              flexDirection: "row",
+              marginTop: 30,
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            textIspodNaslovaView1: {
+              display: "flex",
+              flexDirection: "column",
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            textIspodNaslovaView2: {
+              display: "flex",
+              flexDirection: "column",
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            textIspodNaslovaView3: {
+              display: "flex",
+              flexDirection: "column",
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            textIspodNaslova: {
+              textAlign: "left",
+              marginTop: 10,
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            textIspodNaslova2: {
+              textAlign: "center",
+              marginTop: 10,
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            textIspodNaslova3: {
+              textAlign: "right",
+              marginTop: 10,
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            table: { 
+              display: "flex", 
+              width: 500, 
+              height: "auto",
+              borderStyle: "solid",
+              borderBottomWidth:1,
+              borderLeftWidth: 1,
+              marginTop: 50
+            },
+            tableRow: { 
+              margin: "auto", 
+              flexDirection: "row" 
+            }, 
+            tableCol: { 
+              width: "25%",
+              borderStyle: "solid", 
+              borderTopWidth:1,
+              borderRightWidth: 1
+            }, 
+            tableCell: { 
+              fontFamily: "Lora",
+              margin: "auto",
+              fontSize: 10 
+            },
+            tableColPrazan: {
+              width: "25%",
+              borderStyle: "solid",
+              borderTopWidth: 1,
+            },
+            tableCellUk: {
+              fontFamily: "Lora",
+              marginLeft: -100,
+              fontSize: 12 
+            },
+            textNaDnu: {
+              marginTop: 30,
+              fontFamily: "Lora",
+              fontSize: 11,
+        
+            },
+        
+          })
+    
+        return (
+            <Document>
+                <Page style={styles.page}>
+                <Image style={styles.logo} src={logo}/>
+                <Text style={styles.desniNaslov}>PU MALA FABRIKA MAŠTE</Text>
+                <Text style={styles.desniTekst}>Kirila Savića 7, 11000 Voždovac {'\n'}
+                        Tel: +381113970449 {'\n'}
+                        Email: info@malafabrikamaste.rs {'\n'}
+                        Web: www.malafabrikamaste.rs  {'\n'}
+                        PIB: 108187688  {'\n'}
+                        MB: 17849964
+                </Text>
+                <View style={styles.ispodSlikeTekstView}>
+                    <Text style={styles.ispodSlikeTekstIme}>Ime i prezime: </Text>
+                    <Text style={styles.ispodSlikeTekstIme2}> {dete.imePrezime} </Text>
+                </View>
+                <View style={styles.ispodSlikeTekstView2}>
+                    <Text style={styles.ispodSlikeTekstAd}>Adresa: </Text>
+                    <Text style={styles.ispodSlikeTekstAd2}>{dete.adresa} </Text>
+                </View>
+                <View style={styles.ispodDesnogTekstaView}>
+                    <Text style={styles.ispodDesnogTekstaPro}>Datum prometa: </Text>
+                    <Text style={styles.ispodDesnogTekstaPro2}>{racun.map(r=>r.datumDo)} </Text>
+                </View>
+                <View style={styles.ispodDesnogTekstaView2}>
+                    <Text style={styles.ispodDesnogTeksta}>Datum izdavanja: </Text>
+                    <Text style={styles.ispodDesnogTeksta2}>{racun.map(r=>r.datum)} </Text>
+                </View>
+                <View style={styles.naslovView}>
+                    <Text style={styles.naslov}>RAČUN BR. </Text>
+                    <Text style={styles.naslov}>{racun.map(r=>r.brojFakture) + "/" + racun.map(r=>r.godina)} </Text>
+                </View>
+                <View style={styles.textIspodNaslovaView}>
+                    <View style={styles.textIspodNaslovaView1}>
+                    <Text style={[styles.textIspodNaslova, {fontFamily:'UbuntuBold'}]}>Broj ugovora</Text>
+                    <Text style={styles.textIspodNaslova}>{dete.brojUgovora}</Text>
+                    </View>
+                    <View style={[styles.textIspodNaslovaView2, {marginLeft: 80}]}>
+                    <Text style={[styles.textIspodNaslova2, {fontFamily:'UbuntuBold'}]}>Odobren popust</Text>
+                    <Text style={styles.textIspodNaslova2}>{dete.popust}</Text>
+                    </View>
+                    <View style={[styles.textIspodNaslovaView3, {marginLeft: 80}]}>
+                    <Text style={[styles.textIspodNaslova3, {fontFamily:'UbuntuBold'}]}>Period korišćenja usluge</Text>
+                    <Text style={styles.textIspodNaslova3}>{racun.map(r=>r.datumOd) + "/" + racun.map(r=>r.datumDo)}</Text>
+                    </View>
+                </View>
+                <View style={styles.table}>
+                    <View style={styles.tableRow}> 
+                    <View style={styles.tableCol}> 
+                        <Text style={styles.tableCell}>Opis usluge</Text> 
+                    </View> 
+                    <View style={styles.tableCol}> 
+                        <Text style={styles.tableCell}>Iznos</Text> 
+                    </View> 
+                    <View style={styles.tableCol}> 
+                        <Text style={styles.tableCell}>Popust</Text> 
+                    </View> 
+                    <View style={styles.tableCol}> 
+                        <Text style={styles.tableCell}>Za uplatu</Text> 
+                    </View> 
+                    </View>
+                    <View style={styles.tableRow}> 
+                    <View style={styles.tableCol}> 
+                        <Text style={styles.tableCell}>{dete.ugovor}</Text> 
+                    </View> 
+                    <View style={styles.tableCol}> 
+                        <Text style={styles.tableCell}>{racun.map(r=>r.iznos) + " rsd"}</Text> 
+                    </View> 
+                    <View style={styles.tableCol}>
+                        <Text style={styles.tableCell}>{racun.map(r=>r.popust)+ " rsd"}</Text> 
+                    </View>
+                    <View style={styles.tableCol}> 
+                        <Text style={styles.tableCell}>{racun.map(r=>r.iznos) + " rsd"}</Text> 
+                    </View> 
+                    </View>
+                    <View style={styles.tableRow}>
+                    <View style={styles.tableColPrazan}>
+                        <Text style={styles.tableCell}></Text>
+                    </View>
+                    <View style={styles.tableColPrazan}>
+                        <Text style={styles.tableCell}></Text>
+                    </View>
+                    <View style={styles.tableCol}>
+                        <Text style={styles.tableCellUk}>UKUPNO ZA UPLATU</Text>
+                    </View>
+                    <View style={styles.tableCol}> 
+                        <Text style={[styles.tableCell, {fontFamily: "UbuntuBold",}]}>{racun.map(r=>r.iznos) + " rsd"}</Text> 
+                    </View> 
+                    </View>
+                </View>
+                <Text style={styles.textNaDnu}>Obveznik nije u sistemu PDV-a. {'\n'}
+                        U slučaju kašnjenja sa uplatom, zadržavamo pravo zaračunavanja zakonske zatezne kamate. {'\n'} {'\n'} 
+                        Ovaj dokument je izrađen automatskom obradom podataka i ispisan pomoću računara i kao takav {'\n'}
+                        punovažan bez pečata i potpisa. {'\n'} {'\n'}
+                        Uplata izvršena po profakturi broj {predracun.map(p=>p.brojFakture) + "/" + predracun.map(p=>p.godina)}
+                </Text>
+                </Page>
+            </Document>
+        );
+    };
+
+    const handleClickPredracun = async () => {
+        const pdfBlob = await pdf(<PredracunPdf />).toBlob();
+        saveAs(pdfBlob, 'faktura.pdf');
+    }
+
+    const monthNames = ["Januar", "Februar", "Mart", "April", "Maj", "Jun", "Jul", "Avgust", "Septembar", "Oktobar", "Novembar", "Decembar"];
+    const extractMonth = (date: string) => {
+        const month = date.substring(3,5);
+        return monthNames[parseInt(month, 10) - 1];
+    }
+    
+
+    const PredracunPdf = () => {
+        const month = extractMonth(predracun[0].datumOd);
+        Font.register({
+            family: "Lora",
+            src: Lora,
+            format: "truetype",
+          })
+        
+          Font.register({
+            family: "LoraBold",
+            src: LoraBold,
+            format: "truetype",
+          })
+
+          const styles = StyleSheet.create({
+            page: {
+              // marginTop: 40,
+              // marginLeft: 40,
+              // marginRight: 40,
+              // marginBottom: 60,
+              margin: 30,
+              marginBottom: 10,
+            },
+            desniNaslov: {
+              fontFamily: "LoraBold",
+              fontSize: 13,
+              position: "absolute",
+              left: 300,
+              top: 15
+            },
+            desniTekst: {
+              fontFamily: "Lora",
+              fontSize: 13,
+              fontWeight: 400,
+              position: "absolute",
+              left: 300,
+              top: 30
+            },
+            ispodSlikeTekstView: {
+              display: "flex",
+              flexDirection: "row",
+            },
+            ispodSlikeTekstView2: {
+              display: "flex",
+              flexDirection: "row",
+            },
+            ispodSlikeTekstIme: {
+              fontFamily: "Lora",
+              fontSize: 13,
+              // position: "absolute",
+              // top: 150,
+              // left: 20
+              textAlign: "left",
+              marginTop: 15
+            },
+            ispodSlikeTekstIme2: {
+              fontFamily: "LoraBold",
+              fontSize: 13,
+              // position: "absolute",
+              // top: 150,
+              // left: 20
+              textAlign: "left",
+              marginTop: 15,
+              textTransform: "uppercase"
+            },
+            ispodSlikeTekstAd: {
+              fontFamily: "Lora",
+              fontSize: 13,
+              // position: "absolute",
+              // top: 170,
+              // left: 20
+              textAlign: "left",
+              marginTop:5
+            },
+            ispodSlikeTekstAd2: {
+              fontFamily: "LoraBold",
+              fontSize: 13,
+              // position: "absolute",
+              // top: 170,
+              // left: 20
+              textAlign: "left",
+              marginTop:5,
+              textTransform: "uppercase"
+            },
+            ispodDesnogTekstaView:{
+              display: "flex",
+              flexDirection: "row",
+              position: "absolute",
+              left: 300,
+              top: 145
+            },
+            ispodDesnogTekstaView2:{
+              display: "flex",
+              flexDirection: "row",
+              position: "absolute",
+              left: 300,
+              top: 165
+            },
+            ispodDesnogTekstaPro: {
+              fontFamily: "Lora",
+              fontSize: 13,
+              fontWeight: 400,
+              // position: "absolute",
+              // left: 300,
+              // top: 145
+            },
+            ispodDesnogTekstaPro2: {
+              fontFamily: "LoraBold",
+              fontSize: 13,
+              fontWeight: 400,
+              textTransform: "uppercase",
+              // position: "absolute",
+              // left: 300,
+              // top: 145
+            },
+            ispodDesnogTeksta: {
+              fontFamily: "Lora",
+              fontSize: 13,
+              fontWeight: 400,
+              // position: "absolute",
+              // left: 300,
+              // top: 165
+            },
+            ispodDesnogTeksta2: {
+              fontFamily: "LoraBold",
+              fontSize: 13,
+              fontWeight: 400,
+              textTransform: "uppercase",
+              // position: "absolute",
+              // left: 300,
+              // top: 165
+            },
+            logo: {
+              width: 180,
+              height: 130,
+              marginLeft: -10
+            },
+            naslovView: {
+              display: "flex",
+              flexDirection: "row",
+              marginLeft: 155,
+            },
+            naslov: {
+              textAlign: "center",
+              marginTop: 30,
+              fontFamily: "LoraBold",
+            },
+            textIspodNaslovaView: {
+              display: "flex",
+              flexDirection: "row",
+              marginTop: 30,
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            textIspodNaslovaView1: {
+              display: "flex",
+              flexDirection: "column",
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            textIspodNaslovaView2: {
+              display: "flex",
+              flexDirection: "column",
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            textIspodNaslovaView3: {
+              display: "flex",
+              flexDirection: "column",
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            textIspodNaslova: {
+              textAlign: "left",
+              marginTop: 10,
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            textIspodNaslova2: {
+              textAlign: "center",
+              marginTop: 10,
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            textIspodNaslova3: {
+              textAlign: "right",
+              marginTop: 10,
+              fontFamily: "LoraBold",
+              fontSize: 12
+            },
+            table: { 
+              display: "flex", 
+              width: 500, 
+              height: "auto",
+              borderStyle: "solid",
+              borderBottomWidth:1,
+              borderLeftWidth: 1,
+              marginTop: 50
+            },
+            tableRow: { 
+              margin: "auto", 
+              flexDirection: "row" 
+            }, 
+            tableCol: { 
+              width: "25%",
+              borderStyle: "solid", 
+              borderTopWidth:1,
+              borderRightWidth: 1
+            }, 
+            tableCell: { 
+              fontFamily: "Lora",
+              margin: "auto",
+              fontSize: 10 
+            },
+            tableColPrazan: {
+              width: "25%",
+              borderStyle: "solid",
+              borderTopWidth: 1,
+            },
+            tableCellUk: {
+              fontFamily: "Lora",
+              marginLeft: -100,
+              fontSize: 12 
+            },
+            textNaDnu: {
+              marginTop: 30,
+              fontFamily: "Lora",
+              fontSize: 11,
+        
+            },
+            linija: {
+              border:0.5,
+              width: "95%",
+              color: "grey",
+              marginTop: 4,
+            },
+            linijaNaSredini:{
+              position: "absolute",
+              left: "23%",
+              top: "50%",
+              border: 0.8,
+              opacity: 0.6,
+              width: "50%",
+              color: "grey",
+              transform: "rotate(90deg)",
+            },
+            levaStrana: {
+              width: "47%",
+              height: 260
+            },
+            desnaStrana:{
+              width: "47%",
+              height: 260,
+              position: "absolute",
+              left: "53%",
+            },
+            uplatnica:{
+              marginTop: 5,
+              width: "95%",
+              height: 260,
+            },
+            tabele: {
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 14,
+            },
+            tabeleDesno:{
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 14,
+            },
+            tabeleDesnoRow:{
+              margin: "auto", 
+              flexDirection: "row",
+            },
+            tabeleDesnoCol:{
+              width: 50,
+              height: 15,
+              borderStyle: "solid", 
+              border: 1,
+              marginTop: 20
+            },
+            tabeleDesnoCell: { 
+              fontFamily: "Lora",
+              fontSize: 10
+            },
+            tabeleCol: { 
+              width: 230,
+              height: 43,
+              borderStyle: "solid", 
+              border: 1
+            }, 
+            tabeleCell: { 
+              fontFamily: "Lora",
+              fontSize: 10 
+            },
+            textUplatnica:{
+              fontFamily: "Lora",
+              fontSize: 10
+            },
+            potpisLinija:{
+              marginTop:25,
+              border: 1,
+              width: "65%",
+            },
+            datumLinija:{
+              left: 75,
+              marginTop:20,
+              border: 0.8,
+              width: "65%",
+            },
+            datumLinijaDesno:{
+              marginTop:125,
+              border: 0.8,
+              width: "50%",
+            }
+        
+          })
+    return (
+          <Document>
+            <Page>
+              <View style={styles.page}>
+                <Image style={styles.logo} src={logo}/>
+                <Text style={styles.desniNaslov}>PU MALA FABRIKA MAŠTE</Text>
+                <Text style={styles.desniTekst}>Kirila Savića 7, 11000 Voždovac {'\n'}
+                      Tel: +381113970449 {'\n'}
+                      Email: info@malafabrikamaste.rs {'\n'}
+                      Web: www.malafabrikamaste.rs  {'\n'}
+                      PIB: 108187688  {'\n'}
+                      MB: 17849964
+                </Text>
+                <View style={styles.ispodSlikeTekstView}>
+                  <Text style={styles.ispodSlikeTekstIme}>Ime i prezime: </Text>
+                  <Text style={styles.ispodSlikeTekstIme2}> {dete.imePrezime}</Text>
+                </View>
+                <View style={styles.ispodSlikeTekstView2}>
+                  <Text style={styles.ispodSlikeTekstAd}>Adresa: </Text>
+                  <Text style={styles.ispodSlikeTekstAd2}> {dete.adresa}</Text>
+                </View>
+                <View style={styles.ispodDesnogTekstaView}>
+                  <Text style={styles.ispodDesnogTekstaPro}>Datum prometa: </Text>
+                  <Text style={styles.ispodDesnogTekstaPro2}> {predracun.map(p=>p.datumDo)} </Text>
+                </View>
+                <View style={styles.ispodDesnogTekstaView2}>
+                  <Text style={styles.ispodDesnogTeksta}>Datum izdavanja: </Text>
+                  <Text style={styles.ispodDesnogTeksta2}>{predracun.map(p=>p.datum)} </Text>
+                </View>
+                <View style={styles.naslovView}>
+                  <Text style={styles.naslov}>PREDRAČUN BR. </Text>
+                  <Text style={styles.naslov}>{predracun.map(p=>p.brojFakture) + "/" + predracun.map(p=>p.godina)} </Text>
+                </View>
+                <View style={styles.textIspodNaslovaView}>
+                  <View style={styles.textIspodNaslovaView1}>
+                    <Text style={styles.textIspodNaslova}>Broj ugovora</Text>
+                    <Text style={styles.textIspodNaslova}>{dete.brojUgovora}</Text>
+                  </View>
+                  <View style={[styles.textIspodNaslovaView2, {marginLeft: 80}]}>
+                    <Text style={styles.textIspodNaslova2}>Odobren popust</Text>
+                    <Text style={styles.textIspodNaslova2}>{dete.popust}</Text>
+                  </View>
+                  <View style={[styles.textIspodNaslovaView3, {marginLeft: 80}]}>
+                    <Text style={styles.textIspodNaslova3}>Period korišćenja usluge</Text>
+                    <Text style={styles.textIspodNaslova3}>{predracun.map(p=>p.datumOd) + " - " + predracun.map(p=>p.datumDo)}</Text>
+                  </View>
+                </View>
+                <View style={styles.table}>
+                  <View style={styles.tableRow}> 
+                    <View style={styles.tableCol}> 
+                      <Text style={styles.tableCell}>Opis usluge</Text> 
+                    </View> 
+                    <View style={styles.tableCol}> 
+                      <Text style={styles.tableCell}>Iznos</Text> 
+                    </View> 
+                    <View style={styles.tableCol}> 
+                      <Text style={styles.tableCell}>Popust</Text> 
+                    </View> 
+                    <View style={styles.tableCol}> 
+                      <Text style={styles.tableCell}>Za uplatu</Text> 
+                    </View> 
+                  </View>
+                  <View style={styles.tableRow}> 
+                    <View style={styles.tableCol}> 
+                      <Text style={styles.tableCell}>{predracun.map(p=>p.paket)}</Text> 
+                    </View> 
+                    <View style={styles.tableCol}> 
+                      <Text style={styles.tableCell}>{predracun.map(p=>p.iznos)} rsd</Text> 
+                    </View> 
+                    <View style={styles.tableCol}>
+                      <Text style={styles.tableCell}>{predracun.map(p=>p.popust)} rsd</Text> 
+                    </View>
+                    <View style={styles.tableCol}> 
+                      <Text style={styles.tableCell}>{predracun.map(p=>p.iznos)} rsd</Text> 
+                    </View> 
+                  </View>
+                  <View style={styles.tableRow}>
+                    <View style={styles.tableColPrazan}>
+                      <Text style={styles.tableCell}></Text>
+                    </View>
+                    <View style={styles.tableColPrazan}>
+                      <Text style={styles.tableCell}></Text>
+                    </View>
+                    <View style={styles.tableCol}>
+                      <Text style={styles.tableCellUk}>UKUPNO ZA UPLATU</Text>
+                    </View>
+                    <View style={styles.tableCol}> 
+                      <Text style={[styles.tableCell, {fontFamily: "LoraBold",}]}>{predracun.map(p=>p.iznos)} rsd</Text> 
+                    </View> 
+                  </View>
+                </View>
+                <Text style={styles.textNaDnu}>Obveznik nije u sistemu PDV-a. {'\n'}
+                      U slučaju kašnjenja sa uplatom, zadržavamo pravo zaračunavanja zakonske zatezne kamate. {'\n'} {'\n'} 
+                      Ovaj dokument je izrađen automatskom obradom podataka i ispisan pomoću računara i kao takav {'\n'}
+                      punovažan bez pečata i potpisa. {'\n'} {'\n'}
+                </Text>
+                <View style={styles.linija}/>
+                <View style={styles.uplatnica}>
+                  <View style={styles.levaStrana}>
+                    <View style={styles.tabele}>
+                      <Text style={[styles.textUplatnica, {marginBottom:1, marginLeft:2}]}>platilac</Text>
+                      <View style={styles.tabeleCol}> 
+                        <Text style={[styles.tabeleCell, {paddingTop: 5, paddingLeft: 2}]}>{dete.imePrezime} {'\n'}{dete.adresa}</Text> 
+                      </View> 
+                      <Text style={[styles.textUplatnica, {marginBottom: -13.5, marginLeft:2}]}>svrha uplate</Text>
+                      <View style={[styles.tabeleCol, {marginTop: 15}]}> 
+                        <Text style={[styles.tabeleCell, {paddingLeft: 2}]}>Uplata po predračunu br. {predracun.map(p=>p.brojFakture) + "/" + predracun.map(p=>p.godina)} {'\n'}
+                                                        za mesec {month} za objekat Mala fabrika {'\n'}
+                                                        mašte - {dete.objekat}
+                        </Text> 
+                      </View>
+                      <Text style={[styles.textUplatnica, {marginBottom: -13.5, marginLeft:2}]}>primalac</Text> 
+                      <View style={[styles.tabeleCol, {marginTop: 15}]}> 
+                        <Text style={[styles.tabeleCell, {paddingTop:5, paddingLeft:2}]}>PU Mala fabrika mašte, {'\n'}
+                                                        Kirila Savića 7, 11000 Voždovac
+                        </Text> 
+                      </View> 
+                    </View>
+                    <View style={styles.potpisLinija}/>
+                      <Text style={{fontFamily:"Lora", fontSize: 10}}>pečat i potpis platioca</Text>
+                    <View style={styles.datumLinija}/>
+                      <Text style={{fontFamily:"Lora", fontSize: 10, left: 122}}>mesto i datum prijema</Text>
+                  </View>
+                  <View style={styles.linijaNaSredini}/>
+                  <View style={styles.desnaStrana}>
+                    <View style={styles.tabeleDesno}>
+                      <View style={styles.tabeleDesnoRow}>
+                        <Text style={[styles.textUplatnica, {marginTop:-3 ,marginLeft:2}]}>šifra {'\n'}
+                                                                                          plaćanja
+                        </Text>
+                        <View style={[styles.tabeleDesnoCol, {width: 40, marginLeft: -41, marginTop:25}]}>
+                            <Text style={[styles.tabeleDesnoCell, {paddingLeft: 2}]}>189</Text>
+                        </View>
+                        <Text style={[styles.textUplatnica, {marginTop:11 ,marginLeft:22}]}>valuta</Text>
+                        <View style={[styles.tabeleDesnoCol, {width: 40, marginLeft: -30, marginTop:25}]}>
+                            <Text style={[styles.tabeleDesnoCell, {textAlign: "center"}]}>RSD</Text>
+                        </View>
+                        <Text style={[styles.textUplatnica, {marginTop:11 ,marginLeft:22}]}>iznos</Text>
+                        <View style={[styles.tabeleDesnoCol, {width: 119.5, marginLeft: -28, marginTop:25}]}>
+                            <Text style={[styles.tabeleDesnoCell, {paddingLeft: 2}]}>={predracun.map(p=>p.iznos)}</Text>
+                        </View>
+                      </View>
+                      <View style={styles.tabeleDesnoRow}>
+                        <Text style={[styles.textUplatnica, {marginTop:3 ,marginLeft:2}]}>račun primaoca</Text>
+                        <View style={[styles.tabeleDesnoCol, {width: 238, marginLeft: -76, marginTop: 16.5}]}>
+                          <Text style={[styles.tabeleDesnoCell, {paddingLeft: 2}]}>200-3046160101033-85</Text>
+                        </View>
+                      </View>
+                      <View style={styles.tabeleDesnoRow}>
+                        <Text style={[styles.textUplatnica, {position:'absolute', width: 150, left:2, top:3}]}>model i poziv na broj(odobrenje)</Text>
+                        <View style={[styles.tabeleDesnoCol, {position:'absolute', width: 35, left:-1, top:-3}]}>
+                        </View>
+                        <View style={[styles.tabeleDesnoCol, {width: 180, marginLeft: 57, marginTop:17}]}>
+                          <Text style={[styles.tabeleDesnoCell, {paddingLeft: 2}]}>{predracun.map(p=>p.brojFakture) + "/" + predracun.map(p=>p.godina)}</Text>
+                        </View>
+                      </View>
+                      <View style={styles.datumLinijaDesno}/>
+                      <Text style={{fontFamily:"Lora", fontSize: 10}}>datum izvršenja</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </Page>
+          </Document>
+        );
+    };
 
     
  return (
@@ -1197,9 +2035,9 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
                                 <Col>
                                     <Form.Group>
                                         <Form.Label>Broj fakture</Form.Label>
-                                        <Form.Control type="text" placeholder="Unesit broj"
+                                        <Form.Control type="number" placeholder="Unesit broj"
                                             value={formState.brojFakture} 
-                                            onChange={ e => dispatchFormStateAction({ type: "addFinansijeForm/setBrojfakture", value: e.target.value }) }
+                                            onChange={ e => dispatchFormStateAction({ type: "addFinansijeForm/setBrojfakture", value: +e.target.value }) }
                                         >
                                         </Form.Control>
                                     </Form.Group>
@@ -1287,7 +2125,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
                                             onChange={ e => dispatchFormStateAction({ type: "addFinansijeForm/setPopust", value: e.target.value }) }
                                         >
                                             <option value="">Izaberite popust</option>
-                                            <option value="0">Bez popusta</option>
+                                            <option value="0,00">Bez popusta</option>
                                             <option value="50">50%</option>
                                         </Form.Select>
                                     </Form.Group>
@@ -1380,7 +2218,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
                                         <Form.Label>Broj fakture</Form.Label>
                                         <Form.Control type="text" placeholder="Unesit broj"
                                             value={editFormState.brojFakture} 
-                                            onChange={ e => dispatchEditFormStateAction({ type: "editFinansijeForm/setBrojfakt", value: e.target.value }) }
+                                            onChange={ e => dispatchEditFormStateAction({ type: "editFinansijeForm/setBrojfakt", value: +e.target.value }) }
                                         >
                                         </Form.Control>
                                     </Form.Group>
@@ -1555,7 +2393,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
                                         <Form.Label>Broj fakture</Form.Label>
                                         <Form.Control type="text" placeholder="Unesit broj"
                                             value={editFormState.brojFakture} 
-                                            onChange={ e => dispatchEditFormStateAction({ type: "editFinansijeForm/setBrojfakt", value: e.target.value }) }
+                                            onChange={ e => dispatchEditFormStateAction({ type: "editFinansijeForm/setBrojfakt", value: +e.target.value }) }
                                         >
                                         </Form.Control>
                                     </Form.Group>
@@ -1643,7 +2481,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
                                             onChange={ e => dispatchEditFormStateAction({ type: "editFinansijeForm/setPop", value: e.target.value }) }
                                         >
                                             <option value="">Izaberite popust</option>
-                                            <option value="0">Bez popusta</option>
+                                            <option value="0,00">Bez popusta</option>
                                             <option value="50">50%</option>
                                         </Form.Select>
                                     </Form.Group>
@@ -1732,6 +2570,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
                             <th>{racun.status}</th>
                             <th>
                                 <button className="btn btn-warning me-3" onClick={() => openModalRa(racun)}><FontAwesomeIcon icon={faPenToSquare}></FontAwesomeIcon></button>
+                                <button className="btn btn-primary me-3" onClick={handleClick}><FontAwesomeIcon icon={faPrint}></FontAwesomeIcon></button>
                                 <button className="btn btn-danger" onClick={ () => setDeleteRequestedRa(true) }><FontAwesomeIcon icon={faTrash}></FontAwesomeIcon></button>
                                 { deleteRequestedRa && <ConfirmAction
                                     title="Confirm that you want to delete this racun"
@@ -1775,7 +2614,7 @@ export default function AdminFinansijeFinansije(props: IAdminFinansijeProperties
                             <th>{predracun.status}</th>
                             <th>
                                 <button className="btn btn-warning me-3" onClick={() => openModal(predracun)}><FontAwesomeIcon icon={faPenToSquare}></FontAwesomeIcon></button>
-                                <button className="btn btn-primary me-3"><FontAwesomeIcon icon={faPrint}></FontAwesomeIcon></button>
+                                <button className="btn btn-primary me-3" onClick={handleClickPredracun}><FontAwesomeIcon icon={faPrint}></FontAwesomeIcon></button>
                                 <button className="btn btn-danger" onClick={ () => setDeleteRequested(true) }><FontAwesomeIcon icon={faTrash}></FontAwesomeIcon></button>
                                 { deleteRequested && <ConfirmAction
                                     title="Confirm that you want to delete this zaduzenje"

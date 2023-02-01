@@ -100,6 +100,37 @@ export default abstract class BaseService<ReturnModel extends IModel, AdapterOpt
         );
     }
 
+    public async searchPredracun(fieldName1: string, value1: any, fieldName2: string, value2: any, fieldName3: string, value3: any, options: AdapterOptions): Promise<ReturnModel[]> {
+        if (typeof value1 === 'undefined' || typeof value2 === 'undefined' || typeof value3 === 'undefined') {
+          throw new Error('Value1, value2, and value3 must be defined');
+        }
+      
+        return new Promise<ReturnModel[]>(
+          (resolve, reject) => {
+            const sql: string = `SELECT * FROM dete JOIN predracun ON dete.dete_id = predracun.dete_id WHERE dete.${fieldName1} = ? AND dete.${fieldName2} = ? AND predracun.${fieldName3} = ?;`;
+      
+            this.db.execute(sql, [value1, value2, value3])
+              .then( async ([rows]) => {
+                if (rows === undefined) {
+                  return resolve([]);
+                }
+      
+                const items: ReturnModel[] = [];
+      
+                for (const row of rows as mysql2.RowDataPacket[]) {
+                  items.push(await this.adaptToModel(row, options));
+                }
+      
+                resolve(items);
+              })
+              .catch(error => {
+                reject(error);
+              });
+          }
+        );
+      }
+      
+
     public getById(id: number, options: AdapterOptions): Promise<ReturnModel|null> {
         const tableName = this.tableName();
 

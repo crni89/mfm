@@ -2,13 +2,18 @@ import { useEffect, useReducer, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import IGrupa from '../../../models/IGrupa.model';
 import IObjekat from '../../../models/IObjekat.model';
-import IPorodicniStatus from '../../../models/IPorodicniStatus.model';
 import IUgovor from '../../../models/IUgovor.model';
 import { api } from '../../../api/api';
 import IDete from '../../../models/IDete.model';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faCheckSquare, faCircle, faSquare } from '@fortawesome/free-regular-svg-icons';
 import { motion } from 'framer-motion';
+import IPorodicniStatus from '../../../models/IPorodicniStatus.model';
+import dayjs  from 'dayjs';
+import TextField from '@mui/material/TextField';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 export interface IAdminDeteEditParams extends Record<string, string|undefined>{
     id: string;
@@ -27,7 +32,7 @@ interface IEditDeteFormState {
     grupa: string;
     objekat: string;
     ugovor: string;
-    porodicniStatus: string;
+    pstatus: string;
 };
 
 type TSetImePrezime          = { type: "editDeteForm/setImePrezime",          value: string };
@@ -46,8 +51,8 @@ type TSetGrupa               = { type: "editDeteForm/setGrupa",    value: string
 // type TRemoveObjekat          = { type: "editDeteorm/removeObjekat", value: number };
 type TSetUgovor              = { type: "editDeteForm/setUgovor",    value: string };
 // type TRemoveUgovor           = { type: "editDeteorm/removeUgovor", value: number };
-type TSetPorodicniStatus     = { type: "editDeteForm/setPorodicniStatus",    value: string };
-// type TRemovePorodicniStatus  = { type: "editDeteorm/removePorodicniStatus", value: number };
+type TSetpstatus     = { type: "editDeteForm/setpstatus",    value: string };
+// type TRemovepstatus  = { type: "editDeteorm/removepstatus", value: number };
 // type TSetRoditelj            = { type: "editDeteForm/setRoditelj",    value: number };
 // // type TRemoveRoditelj         = { type: "editDeteorm/removeRoditelj", value: number };
 
@@ -63,7 +68,7 @@ type EditDeteFormAction = TSetImePrezime
                        | TSetGrupa
                        | TSetObjekat
                        | TSetUgovor
-                       | TSetPorodicniStatus;
+                       | TSetpstatus;
                     //    | TSetRoditelj;
 
 function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormAction): IEditDeteFormState {
@@ -82,7 +87,7 @@ function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormA
                 grupa: oldState.grupa,
                 objekat: oldState.objekat,
                 ugovor: oldState.ugovor,
-                porodicniStatus: oldState.porodicniStatus,
+                pstatus: oldState.pstatus,
                 // This changes:
                 imePrezime: action.value,
             }
@@ -102,7 +107,7 @@ function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormA
                 grupa: oldState.grupa,
                 objekat: oldState.objekat,
                 ugovor: oldState.ugovor,
-                porodicniStatus: oldState.porodicniStatus,
+                pstatus: oldState.pstatus,
                 
                 // This changes:
                 jmbg: action.value,
@@ -123,7 +128,7 @@ function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormA
                 grupa: oldState.grupa,
                 objekat: oldState.objekat,
                 ugovor: oldState.ugovor,
-                porodicniStatus: oldState.porodicniStatus,
+                pstatus: oldState.pstatus,
                 
                 // This changes:
                 datumRodj: action.value,
@@ -144,7 +149,7 @@ function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormA
                 grupa: oldState.grupa,
                 objekat: oldState.objekat,
                 ugovor: oldState.ugovor,
-                porodicniStatus: oldState.porodicniStatus,
+                pstatus: oldState.pstatus,
                 
                 // This changes:
                 adresa: action.value,
@@ -165,7 +170,7 @@ function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormA
                 grupa: oldState.grupa,
                 objekat: oldState.objekat,
                 ugovor: oldState.ugovor,
-                porodicniStatus: oldState.porodicniStatus,
+                pstatus: oldState.pstatus,
                 
                 // This changes:
                 brojUgovora: action.value,
@@ -186,7 +191,7 @@ function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormA
                 grupa: oldState.grupa,
                 objekat: oldState.objekat,
                 ugovor: oldState.ugovor,
-                porodicniStatus: oldState.porodicniStatus,
+                pstatus: oldState.pstatus,
                 
                 // This changes:
                 datumUgovora: action.value,
@@ -207,7 +212,7 @@ function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormA
                 grupa: oldState.grupa,
                 objekat: oldState.objekat,
                 ugovor: oldState.ugovor,
-                porodicniStatus: oldState.porodicniStatus,
+                pstatus: oldState.pstatus,
                 
                 // This changes:
                 datumPolaska: action.value,
@@ -228,7 +233,7 @@ function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormA
                 grupa: oldState.grupa,
                 objekat: oldState.objekat,
                 ugovor: oldState.ugovor,
-                porodicniStatus: oldState.porodicniStatus,
+                pstatus: oldState.pstatus,
                 
                 // This changes:
                 subvencija: !oldState.subvencija,
@@ -249,7 +254,7 @@ function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormA
                 grupa: oldState.grupa,
                 objekat: oldState.objekat,
                 ugovor: oldState.ugovor,
-                porodicniStatus: oldState.porodicniStatus,
+                pstatus: oldState.pstatus,
                 
                 // This changes:
                 popust: action.value,
@@ -270,7 +275,7 @@ function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormA
                 popust: oldState.popust,
                 objekat: oldState.objekat,
                 ugovor: oldState.ugovor,
-                porodicniStatus: oldState.porodicniStatus,
+                pstatus: oldState.pstatus,
                 
                 // This changes:
                 grupa: action.value,
@@ -291,7 +296,7 @@ function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormA
                 popust: oldState.popust,
                 grupa: oldState.grupa,
                 ugovor: oldState.ugovor,
-                porodicniStatus: oldState.porodicniStatus,
+                pstatus: oldState.pstatus,
                 
                 // This changes:
                 objekat: action.value,
@@ -312,14 +317,14 @@ function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormA
                 popust: oldState.popust,
                 grupa: oldState.grupa,
                 objekat: oldState.objekat,
-                porodicniStatus: oldState.porodicniStatus,
+                pstatus: oldState.pstatus,
                 
                 // This changes:
                 ugovor: action.value,
             }
         }
         
-        case "editDeteForm/setPorodicniStatus": {
+        case "editDeteForm/setpstatus": {
             return {
                 ...oldState,
                 imePrezime: oldState.imePrezime,
@@ -336,7 +341,7 @@ function EditDeteFormReducer(oldState: IEditDeteFormState, action: EditDeteFormA
                 ugovor: oldState.ugovor,
                 
                 // This changes:
-                porodicniStatus: action.value,
+                pstatus: action.value,
             }
         }
         
@@ -372,7 +377,7 @@ export default function AdminDeteEdit() {
         grupa: "",
         objekat: "",
         ugovor: "",
-        porodicniStatus: "",
+        pstatus: "",
     });
 
     const loadGrupa = () => {
@@ -435,8 +440,8 @@ export default function AdminDeteEdit() {
 
             return res.data;
         })
-        .then(porodicniStatus => {
-            setPs(porodicniStatus);
+        .then(pstatus => {
+            setPs(pstatus);
         })
         .catch(error => {
             setErrorMessage(error?.message ?? "Unknown error!");
@@ -504,7 +509,7 @@ export default function AdminDeteEdit() {
         dispatchFormStateAction({ type: "editDeteForm/setObjekat", value: dete?.objekat ?? '' });
         dispatchFormStateAction({ type: "editDeteForm/setUgovor", value: dete?.ugovor ?? '' });
         dispatchFormStateAction({ type: "editDeteForm/setGrupa", value: dete?.grupa ?? '' });
-        dispatchFormStateAction({ type: "editDeteForm/setPorodicniStatus", value: dete?.porodicniStatus ?? '' });
+        dispatchFormStateAction({ type: "editDeteForm/setpstatus", value: dete?.pstatus ?? '' });
         
         if (dete?.subvencija) {
             dispatchFormStateAction({type: "editDeteForm/toggleSubvencija"});
@@ -561,11 +566,15 @@ export default function AdminDeteEdit() {
                         />
                     </div>
                     <div className='col'>
-                        <label>Datum rodjenja</label>
-                        <input type="text" className='form-control' placeholder="U formatu dd.mm.gggg."
-                        value={ formState.datumRodj }
-                        onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setDatumRodj", value: e.target.value }) }
-                        />
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                                label="Datum rodjenja"
+                                value={dayjs(formState.datumRodj, 'DD.MM.YYYY.')}
+                                onChange={(date) => dispatchFormStateAction({ type: "editDeteForm/setDatumRodj", value: date.format('DD.MM.YYYY.')})}
+                                renderInput={(params) => <TextField {...params} />}
+                                inputFormat="DD/MM/YYYY"
+                            />
+                        </LocalizationProvider>
                     </div>
                 </div>
                 <div className='row mb-3'>
@@ -591,8 +600,8 @@ export default function AdminDeteEdit() {
                     <div className='col'>
                         <label>Porodični status</label>
                         <select className='form-select'
-                        value={ formState.porodicniStatus }
-                        onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setPorodicniStatus", value: e.target.value }) }
+                        value={ formState.pstatus }
+                        onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setpstatus", value: e.target.value }) }
                         >
                             <option value=''>Izaberite status</option>
                             {ps.map((ps) => (
@@ -636,18 +645,26 @@ export default function AdminDeteEdit() {
                 </div>
                 <div className="row mb-3">
                     <div className='col'>
-                        <label>Datum ugovora</label>
-                        <input type="text" className='form-control' placeholder="U formatu dd.mm.gggg."
-                        value={ formState.datumUgovora }
-                        onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setDatumUgovora", value: e.target.value }) }
-                        />
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                                label="Datum ugovora"
+                                value={dayjs(formState.datumUgovora, 'DD.MM.YYYY.')}
+                                onChange={(date) => dispatchFormStateAction({ type: "editDeteForm/setDatumUgovora", value: date.format('DD.MM.YYYY.')})}
+                                renderInput={(params) => <TextField {...params} />}
+                                inputFormat="DD/MM/YYYY"
+                            />
+                        </LocalizationProvider>
                     </div>
                     <div className='col'>
-                        <label>Datum polaska</label>
-                        <input type="text" className='form-control' placeholder="U formatu dd.mm.gggg."
-                        value={ formState.datumPolaska }
-                        onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setDatumPolaska", value: e.target.value }) }
-                        />
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                                label="Datum polaska"
+                                value={dayjs(formState.datumPolaska, 'DD.MM.YYYY.')}
+                                onChange={(date) => dispatchFormStateAction({ type: "editDeteForm/setDatumPolaska", value: date.format('DD.MM.YYYY.')})}
+                                renderInput={(params) => <TextField {...params} />}
+                                inputFormat="DD/MM/YYYY"
+                            />
+                        </LocalizationProvider>
                     </div>
                     <div className='col'>
                         <label>Popust</label>
@@ -663,10 +680,10 @@ export default function AdminDeteEdit() {
                 </div>
                 <div className="row mb-3">
                     <div className="col">
-                        <div className="form-check">
+                        <div className="form-group">
                         <label>Subvencija</label>
                             <div className="input-group">
-                                <div onClick={ () => dispatchFormStateAction({ type: "editDeteForm/toggleSubvencija" }) }>
+                                <div className='form-control' onClick={ () => dispatchFormStateAction({ type: "editDeteForm/toggleSubvencija" }) }>
                                     <FontAwesomeIcon icon={ formState.subvencija ? faCheckCircle : faCircle } /> { formState.subvencija ? "Da" : "Ne" }
                                 </div>
                             </div>

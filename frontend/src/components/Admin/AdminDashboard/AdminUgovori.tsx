@@ -199,7 +199,7 @@ export default function AdminUgovori() {
                     <thead>
                         <tr>
                             <th className="category-row-id">ID</th>
-                            <th>Name</th>
+                            <th>Ime</th>
                             <th>Cena</th>
                         </tr>
                     </thead>
