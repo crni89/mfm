@@ -105,7 +105,7 @@ export default function AdminKnjiga() {
   };
 
   const handleSelectAllChange = event => {
-      const predracunIds = dete.map(d=>d.predracuni.map(p => p.predracunId));
+      const predracunIds = dete.flatMap(d => d.predracuni.map(p => p.predracunId));
       setSelectedIds(event.target.checked ? predracunIds : []);
   };
 
@@ -616,120 +616,122 @@ return (
 };
 
   return (
-    <div className="card">
-      <div className="card-body">
-        <div className="card-title">
-          <div className="row">
-            <div className="col">
-              <div className="form-group">
-                <label htmlFor="">Objekat</label>
-                <select className="form-control" value={objekat ? objekat.ime : ''} onChange={handleObjekatChange}>
-                  <option value="">Izaberite objekat</option>
-                  {objekti.map(o => (
-                    <option key={o.ime} value={o.ime}>{o.ime}</option>
-                  ))}
-                </select>
+    <div className="bg">
+      <div className="card">
+        <div className="card-body">
+          <div className="card-title">
+            <div className="row">
+              <div className="col">
+                <div className="form-group">
+                  <label htmlFor="">Objekat</label>
+                  <select className="form-control" value={objekat ? objekat.ime : ''} onChange={handleObjekatChange}>
+                    <option value="">Izaberite objekat</option>
+                    {objekti.map(o => (
+                      <option key={o.ime} value={o.ime}>{o.ime}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
-            </div>
-            <div className="col">
-              <div className="form-group">
-                <label htmlFor="">Ugovor</label>
-                <select className="form-control" value={ugovor ? ugovor.ime : ''} onChange={handleUgovorChange}>
-                  <option value="">Izaberite ugovor</option>
-                  {ugovori.map( u => (
-                    <option value={u.ime}>{u.ime}</option>
-                  ))}
-                </select>
+              <div className="col">
+                <div className="form-group">
+                  <label htmlFor="">Ugovor</label>
+                  <select className="form-control" value={ugovor ? ugovor.ime : ''} onChange={handleUgovorChange}>
+                    <option value="">Izaberite ugovor</option>
+                    {ugovori.map( u => (
+                      <option value={u.ime}>{u.ime}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
-            </div>
-            {/* <div className="col">
-              <div className="form-group">
-                <label htmlFor="">Predracun/Racun</label>
-                <select className='form-control'>
-                  <option value="Predracun">Predracun</option>
-                  <option value="Racun">Racun</option>
-                </select>
+              {/* <div className="col">
+                <div className="form-group">
+                  <label htmlFor="">Predracun/Racun</label>
+                  <select className='form-control'>
+                    <option value="Predracun">Predracun</option>
+                    <option value="Racun">Racun</option>
+                  </select>
+                </div>
+              </div> */}
+              <div className="col">
+                <div className="form-group">
+                  <label htmlFor="">Status</label>
+                  <select className='form-control' value={status} onChange={handleStatusChange}>
+                    <option value="">Izaberite status</option>
+                    <option value="Placeno">Placeno</option>
+                    <option value="Neplaceno">Neplaceno</option>
+                  </select>
+                </div>
               </div>
-            </div> */}
-            <div className="col">
-              <div className="form-group">
-                <label htmlFor="">Status</label>
-                <select className='form-control' value={status} onChange={handleStatusChange}>
-                  <option value="">Izaberite status</option>
-                  <option value="Placeno">Placeno</option>
-                  <option value="Neplaceno">Neplaceno</option>
-                </select>
+              <div className="col">
+                <button className='btn btn-primary mt-4 ms-5 px-5' onClick={pretraga}>Pretrazi</button>
               </div>
-            </div>
-            <div className="col">
-              <button className='btn btn-primary mt-4 ms-5 px-5' onClick={pretraga}>Pretrazi</button>
             </div>
           </div>
-        </div>
-        <div className="card-text">
-          <div className="d-flex justify-content-end col mt-5">
-            <Dropdown>
-              <Dropdown.Toggle variant='secondary'>
-                Alatke
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={printZaduzenje}>Odstampaj</Dropdown.Item>
-                <Dropdown.Item>Izmeni statusa predracuna</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
+          <div className="card-text">
+            <div className="d-flex justify-content-end col mt-5">
+              <Dropdown>
+                <Dropdown.Toggle variant='secondary'>
+                  Alatke
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={printZaduzenje}>Odstampaj</Dropdown.Item>
+                  <Dropdown.Item>Izmeni statusa predracuna</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+            <table className='table table-striped table-bordered caption-top table-sm mt-2'>
+            <thead>
+                <tr>
+                  <th>
+                  <Form.Check
+                      type="checkbox"
+                      id="select-all"
+                      label="Izaberi sve"
+                      checked={selectedIds.length === dete.length}
+                      onChange={handleSelectAllChange}
+                  />
+                  </th>
+                  <th>Dete</th>
+                  <th>Broj ugovora</th>
+                  <th>Objekat</th>
+                  <th>Grupa</th>
+                  <th>Broj fakture</th>
+                  <th>Poziv na broj</th>
+                  <th>Paket</th>
+                  <th>Datum fakture</th>
+                  <th>Iznos</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {dete.map(dete => (
+                    dete.predracuni.map(p => (
+                      <tr key={"predracun-" + p.predracunId}>
+                        <td>
+                          <Form.Check
+                              type="checkbox"
+                              id={p.predracunId.toString()}
+                              label=""
+                              checked={selectedIds.includes(p.predracunId)}
+                              onChange={() => handleSelectChange(p.predracunId)}
+                          />
+                        </td>
+                        <td>{dete.imePrezime}</td>
+                        <td>{dete.brojUgovora}</td>
+                        <td>{dete.objekat}</td>
+                        <td>{dete.grupa}</td>
+                        <td>{p.brojFakture}/{p.godina}</td>
+                        <td>{p.pozivNaBroj}/{p.godina}</td>
+                        <td>{p.paket}</td>
+                        <td>{p.datum}</td>
+                        <td>{p.iznos}</td>
+                        <td>{p.status}</td>
+                      </tr>
+                    ))
+                  ))}
+              </tbody>
+            </table>
           </div>
-          <table className='table table-striped table-bordered caption-top table-sm mt-2'>
-          <thead>
-              <tr>
-                <th>
-                <Form.Check
-                    type="checkbox"
-                    id="select-all"
-                    label="Izaberi sve"
-                    checked={selectedIds.length === dete.length}
-                    onChange={handleSelectAllChange}
-                />
-                </th>
-                <th>Dete</th>
-                <th>Broj ugovora</th>
-                <th>Objekat</th>
-                <th>Grupa</th>
-                <th>Broj fakture</th>
-                <th>Poziv na broj</th>
-                <th>Paket</th>
-                <th>Datum fakture</th>
-                <th>Iznos</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-                {dete.map(dete => (
-                  dete.predracuni.map(p => (
-                    <tr key={"predracun-" + p.predracunId}>
-                      <td>
-                        <Form.Check
-                            type="checkbox"
-                            id={p.predracunId.toString()}
-                            label=""
-                            checked={selectedIds.includes(p.predracunId)}
-                            onChange={() => handleSelectChange(p.predracunId)}
-                        />
-                      </td>
-                      <td>{dete.imePrezime}</td>
-                      <td>{dete.brojUgovora}</td>
-                      <td>{dete.objekat}</td>
-                      <td>{dete.grupa}</td>
-                      <td>{p.brojFakture}/{p.godina}</td>
-                      <td>{p.pozivNaBroj}/{p.godina}</td>
-                      <td>{p.paket}</td>
-                      <td>{p.datum}</td>
-                      <td>{p.iznos}</td>
-                      <td>{p.status}</td>
-                    </tr>
-                  ))
-                ))}
-            </tbody>
-          </table>
         </div>
       </div>
     </div>

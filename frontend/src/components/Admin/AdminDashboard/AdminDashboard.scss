@@ -1,0 +1,21 @@
+.bg {
+    height: 55em;
+}
+
+.bg::after {
+    content: "";
+    background: url('../../../template/LOGO\ -\ FINALNO\ RESENJE\ 240710-1.png') no-repeat center;
+    background-size: cover;
+    object-fit: cover;
+    position: absolute;
+    top:0px;
+    left: 0px;
+    width:100%;
+    height:100%;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.ds {
+    box-shadow: 4px 5px 6px 0.5px gray;
+}

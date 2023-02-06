@@ -28,14 +28,30 @@ export default function AdminRoditeljiList() {
     };
 
     useEffect(loadRoditelj, []);
+
+    const [filterText, setFilterText] = useState("");
+
+    const filteredRod = roditelj.filter(
+        roditelj => roditelj.imePrezime.toLocaleLowerCase().includes(filterText)
+    );
+
+    const rodToDisplay = filterText ? filteredRod : roditelj;
     
   return (
-    <div className="">
+    <div className="bg">
+            <div className="card-header">
+                <div className="input-group mb-5">
+                    <input type="text" className='form-control' placeholder='Ime i prezime roditelja' 
+                        value={filterText}
+                        onChange={(e) => setFilterText(e.target.value)}    
+                    />
+                </div>
+            </div>
             <div className="card-body">
                 <div className="card-text">
                     { errorMessage && <div className="alern alert-danger">{ errorMessage }</div> }
                     <div className="table-responsive">
-                        <table className="table table-striped caption-top table-bordered table-sm">
+                        <table className="table table-striped caption-top table-bordered table-sm table-dark">
                             <thead>
                                 <tr>
                                     <th>Ime prezime</th>
@@ -54,7 +70,7 @@ export default function AdminRoditeljiList() {
                             <tbody>
                                 { roditelj.length === 0 && <tr><td colSpan={7}>No Roditelj</td></tr> }
 
-                                { roditelj.map(roditelj => (
+                                { rodToDisplay.map(roditelj => (
                                     <tr key={ "dete-" + roditelj.roditeljId }>
                                         <td>
                                             

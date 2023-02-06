@@ -530,175 +530,177 @@ export default function AdminDeteEdit() {
     }
 
   return (
-    <motion.div className="card"
-            initial={{
-                position: "relative",
-                top: 20,
-                scale: 0.75,
-                opacity: 0,
-            }}
-            animate={{
-                top: 0,
-                scale: 1,
-                opacity: 1,
-            }}
-            transition={{
-                delay: 0.3,
-            }}>
-        <div className='card-body'>
-            <div className='card-title'>
-                <h1 className='h4 text-center'>Izmena deteta {dete?.imePrezime}</h1>
-            </div>
-            <div className='card-text'>
-                <div className='row mb-3'>
-                    <div className='col'>
-                        <label>Ime i prezime</label>
-                        <input type="text" className='form-control' placeholder='Unesite ime i prezime' 
-                            value={ formState.imePrezime }
-                            onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setImePrezime", value: e.target.value }) }
-                        />
-                    </div>
-                    <div className='col'>
-                        <label>JMBG</label>
-                        <input type="text" className='form-control' placeholder='Unesite jmbg'
-                         value={ formState.jmbg }
-                         onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setJmbg", value: e.target.value }) }
-                        />
-                    </div>
-                    <div className='col'>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker
-                                label="Datum rodjenja"
-                                value={dayjs(formState.datumRodj, 'DD.MM.YYYY.')}
-                                onChange={(date) => dispatchFormStateAction({ type: "editDeteForm/setDatumRodj", value: date.format('DD.MM.YYYY.')})}
-                                renderInput={(params) => <TextField {...params} />}
-                                inputFormat="DD/MM/YYYY"
+    <div className="bg">
+        <motion.div className="card"
+                initial={{
+                    position: "relative",
+                    top: 20,
+                    scale: 0.75,
+                    opacity: 0,
+                }}
+                animate={{
+                    top: 0,
+                    scale: 1,
+                    opacity: 1,
+                }}
+                transition={{
+                    delay: 0.3,
+                }}>
+            <div className='card-body'>
+                <div className='card-title'>
+                    <h1 className='h4 text-center'>Izmena deteta {dete?.imePrezime}</h1>
+                </div>
+                <div className='card-text'>
+                    <div className='row mb-3'>
+                        <div className='col'>
+                            <label>Ime i prezime</label>
+                            <input type="text" className='form-control' placeholder='Unesite ime i prezime' 
+                                value={ formState.imePrezime }
+                                onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setImePrezime", value: e.target.value }) }
                             />
-                        </LocalizationProvider>
-                    </div>
-                </div>
-                <div className='row mb-3'>
-                    <div className='col'>
-                        <label>Ugovor</label>
-                        <select className='form-select'
-                        value={ formState.ugovor }
-                        onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setUgovor", value: e.target.value }) }
-                        >
-                            <option value="">Izaberite ugovor</option>
-                            {ugovor.map((ugovor) => (
-                                <option value={ugovor.ime}>{ugovor.ime}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className='col'>
-                        <label>Adresa prebivališta</label>
-                        <input type="text" className='form-control' placeholder='Unesite adresu' 
-                        value={ formState.adresa }
-                        onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setAdresa", value: e.target.value }) }
-                        />
-                    </div>
-                    <div className='col'>
-                        <label>Porodični status</label>
-                        <select className='form-select'
-                        value={ formState.pstatus }
-                        onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setpstatus", value: e.target.value }) }
-                        >
-                            <option value=''>Izaberite status</option>
-                            {ps.map((ps) => (
-                                <option value={ps.ime}>{ps.ime}</option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-                <div className="row mb-3">
-                    <div className='col'>
-                        <label>Objekat</label>
-                        <select className='form-select'
-                        value={ formState.objekat }
-                        onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setObjekat", value: e.target.value }) }
-                        >
-                            <option value=''>Izaberite objekat</option>
-                            {objekat.map((objekat) => (
-                                <option value={objekat.ime}>{objekat.ime}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className='col'>
-                        <label>Grupa</label>
-                        <select className='form-select'
-                        value={ formState.grupa }
-                        onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setGrupa", value: e.target.value }) }
-                        >
-                            <option value=''>Izaberite grupu</option>
-                            {grupa.map((grupa) => (
-                                <option value={grupa.ime}>{grupa.ime}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className='col'>
-                        <label>Broj ugovora</label>
-                        <input type="text" className='form-control' placeholder='Unesite broj ugovora' 
-                        value={ formState.brojUgovora }
-                        onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setBrojUgovora", value: e.target.value }) }
-                        />
-                    </div>
-                </div>
-                <div className="row mb-3">
-                    <div className='col'>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker
-                                label="Datum ugovora"
-                                value={dayjs(formState.datumUgovora, 'DD.MM.YYYY.')}
-                                onChange={(date) => dispatchFormStateAction({ type: "editDeteForm/setDatumUgovora", value: date.format('DD.MM.YYYY.')})}
-                                renderInput={(params) => <TextField {...params} />}
-                                inputFormat="DD/MM/YYYY"
+                        </div>
+                        <div className='col'>
+                            <label>JMBG</label>
+                            <input type="text" className='form-control' placeholder='Unesite jmbg'
+                            value={ formState.jmbg }
+                            onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setJmbg", value: e.target.value }) }
                             />
-                        </LocalizationProvider>
+                        </div>
+                        <div className='col'>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    label="Datum rodjenja"
+                                    value={dayjs(formState.datumRodj, 'DD.MM.YYYY.')}
+                                    onChange={(date) => dispatchFormStateAction({ type: "editDeteForm/setDatumRodj", value: date.format('DD.MM.YYYY.')})}
+                                    renderInput={(params) => <TextField {...params} />}
+                                    inputFormat="DD/MM/YYYY"
+                                />
+                            </LocalizationProvider>
+                        </div>
                     </div>
-                    <div className='col'>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker
-                                label="Datum polaska"
-                                value={dayjs(formState.datumPolaska, 'DD.MM.YYYY.')}
-                                onChange={(date) => dispatchFormStateAction({ type: "editDeteForm/setDatumPolaska", value: date.format('DD.MM.YYYY.')})}
-                                renderInput={(params) => <TextField {...params} />}
-                                inputFormat="DD/MM/YYYY"
+                    <div className='row mb-3'>
+                        <div className='col'>
+                            <label>Ugovor</label>
+                            <select className='form-select'
+                            value={ formState.ugovor }
+                            onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setUgovor", value: e.target.value }) }
+                            >
+                                <option value="">Izaberite ugovor</option>
+                                {ugovor.map((ugovor) => (
+                                    <option value={ugovor.ime}>{ugovor.ime}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className='col'>
+                            <label>Adresa prebivališta</label>
+                            <input type="text" className='form-control' placeholder='Unesite adresu' 
+                            value={ formState.adresa }
+                            onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setAdresa", value: e.target.value }) }
                             />
-                        </LocalizationProvider>
+                        </div>
+                        <div className='col'>
+                            <label>Porodični status</label>
+                            <select className='form-select'
+                            value={ formState.pstatus }
+                            onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setpstatus", value: e.target.value }) }
+                            >
+                                <option value=''>Izaberite status</option>
+                                {ps.map((ps) => (
+                                    <option value={ps.ime}>{ps.ime}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
-                    <div className='col'>
-                        <label>Popust</label>
-                        <select className='form-select'
-                        value={ formState.popust }
-                        onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setPopust", value: e.target.value }) }
-                        >
-                            <option value=''>Izaberite popust</option>
-                            <option value="Bez popusta">Bez popusta</option>
-                            <option value="50%">50%</option>
-                        </select>
+                    <div className="row mb-3">
+                        <div className='col'>
+                            <label>Objekat</label>
+                            <select className='form-select'
+                            value={ formState.objekat }
+                            onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setObjekat", value: e.target.value }) }
+                            >
+                                <option value=''>Izaberite objekat</option>
+                                {objekat.map((objekat) => (
+                                    <option value={objekat.ime}>{objekat.ime}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className='col'>
+                            <label>Grupa</label>
+                            <select className='form-select'
+                            value={ formState.grupa }
+                            onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setGrupa", value: e.target.value }) }
+                            >
+                                <option value=''>Izaberite grupu</option>
+                                {grupa.map((grupa) => (
+                                    <option value={grupa.ime}>{grupa.ime}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className='col'>
+                            <label>Broj ugovora</label>
+                            <input type="text" className='form-control' placeholder='Unesite broj ugovora' 
+                            value={ formState.brojUgovora }
+                            onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setBrojUgovora", value: e.target.value }) }
+                            />
+                        </div>
                     </div>
-                </div>
-                <div className="row mb-3">
-                    <div className="col">
-                        <div className="form-group">
-                        <label>Subvencija</label>
-                            <div className="input-group">
-                                <div className='form-control' onClick={ () => dispatchFormStateAction({ type: "editDeteForm/toggleSubvencija" }) }>
-                                    <FontAwesomeIcon icon={ formState.subvencija ? faCheckCircle : faCircle } /> { formState.subvencija ? "Da" : "Ne" }
+                    <div className="row mb-3">
+                        <div className='col'>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    label="Datum ugovora"
+                                    value={dayjs(formState.datumUgovora, 'DD.MM.YYYY.')}
+                                    onChange={(date) => dispatchFormStateAction({ type: "editDeteForm/setDatumUgovora", value: date.format('DD.MM.YYYY.')})}
+                                    renderInput={(params) => <TextField {...params} />}
+                                    inputFormat="DD/MM/YYYY"
+                                />
+                            </LocalizationProvider>
+                        </div>
+                        <div className='col'>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    label="Datum polaska"
+                                    value={dayjs(formState.datumPolaska, 'DD.MM.YYYY.')}
+                                    onChange={(date) => dispatchFormStateAction({ type: "editDeteForm/setDatumPolaska", value: date.format('DD.MM.YYYY.')})}
+                                    renderInput={(params) => <TextField {...params} />}
+                                    inputFormat="DD/MM/YYYY"
+                                />
+                            </LocalizationProvider>
+                        </div>
+                        <div className='col'>
+                            <label>Popust</label>
+                            <select className='form-select'
+                            value={ formState.popust }
+                            onChange={ e => dispatchFormStateAction({ type: "editDeteForm/setPopust", value: e.target.value }) }
+                            >
+                                <option value=''>Izaberite popust</option>
+                                <option value="Bez popusta">Bez popusta</option>
+                                <option value="50%">50%</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div className="row mb-3">
+                        <div className="col">
+                            <div className="form-group">
+                            <label>Subvencija</label>
+                                <div className="input-group">
+                                    <div className='form-control' onClick={ () => dispatchFormStateAction({ type: "editDeteForm/toggleSubvencija" }) }>
+                                        <FontAwesomeIcon icon={ formState.subvencija ? faCheckCircle : faCircle } /> { formState.subvencija ? "Da" : "Ne" }
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="row" style={{marginLeft:"45%"}}>
-                    <div className="col">
-                        <button className="btn btn-primary" style={{width:'150px', height:"50px"}} onClick={ () => doEditDete() }>
-                            Izmeni
-                        </button>
+                    <div className="row" style={{marginLeft:"45%"}}>
+                        <div className="col">
+                            <button className="btn btn-primary" style={{width:'150px', height:"50px"}} onClick={ () => doEditDete() }>
+                                Izmeni
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </motion.div>
+        </motion.div>
+    </div>
   )
 }

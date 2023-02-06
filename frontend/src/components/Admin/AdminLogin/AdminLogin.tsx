@@ -88,14 +88,14 @@ export default function AdminLogin() {
                 { error && <p className="alert alert-danger">{ error }</p> }
             </div> */}
             <div className="Auth-form-container">
-                <form className="Auth-form">
+                <div className="Auth-form">
                     <div className="Auth-form-content">
                     <img src={logo} alt="Mfm" className='Auth-form-img' />
                     <h3 className="Auth-form-title">Prijava</h3>
                     <div className="form-group mt-3">
                         <label>Username</label>
                         <input
-                        type="email"
+                        type="text"
                         className="form-control mt-1"
                         placeholder="Enter username"
                         value={ username }
@@ -121,7 +121,7 @@ export default function AdminLogin() {
                         </button>
                     </div>
                     </div>
-                </form>
+                </div>
             </div>
     </motion.div>
   )

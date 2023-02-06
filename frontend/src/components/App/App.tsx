@@ -19,7 +19,6 @@ import AdminDeteEdit from '../Admin/AdminDashboard/AdminDeteEdit';
 import AdminRoditelj from '../Admin/AdminDashboard/AdminRoditelj';
 import AdminRoditeljEdit from '../Admin/AdminDashboard/AdminRoditeljEdit';
 import AdminDeteFinansije from '../Admin/AdminDashboard/AdminDeteFinansije';
-import Pretraga from '../Admin/AdminDashboard/Pretraga';
 import AdminKnjiga from '../Admin/AdminDashboard/AdminKnjiga';
 
 function App() {

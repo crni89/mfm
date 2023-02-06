@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave } from "@fortawesome/free-regular-svg-icons";
 import { api } from "../../../api/api";
 import { useNavigate } from "react-router-dom";
+import ReactPasswordChecklist from "react-password-checklist";
 
 export default function AdminAdministratorAdd() {
     const [ username, setUsername ] = useState<string>("");
@@ -45,6 +46,11 @@ export default function AdminAdministratorAdd() {
                                 <input type="password" id="input-password" className="form-control"
                                        value={ password }
                                        onChange={ e => setPassword(e.target.value) } />
+                                <ReactPasswordChecklist
+                                    rules={["minLength", "number", "capital"]}
+                                    value={password}
+                                    minLength={6}
+                                />
                             </div>
 
                             <div className="form-group">

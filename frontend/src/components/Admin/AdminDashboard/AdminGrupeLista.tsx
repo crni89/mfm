@@ -60,8 +60,8 @@ export default function AdminGrupeLista() {
                         }
                         <button className='btn btn-danger' onClick={ () => setDeleteRequested(true) }>Obriši</button>
                         { deleteRequested && <ConfirmAction
-                        title="Confirm that you want to delete this ingredient"
-                        message={ "Are you sure that you want to delete this item: \"" + props.grupa.ime + "\"?" }
+                        title="Potvrdite da želite da izbrišete"
+                        message={ "Da li ste sigurni da želite da izbrišete grupu: \"" + props.grupa.ime + "\"?" }
                         onNo={ () => setDeleteRequested(false) }
                         onYes={ () => doDeletegrupa() }
                     /> }
@@ -142,13 +142,13 @@ export default function AdminGrupeLista() {
     }, [ ]);
 
     return (
-        <div>
+        <div className='bg'>
             { errorMessage && <p>Error: { errorMessage }</p> }
             { !errorMessage &&
                 <div>
                     <button className="btn btn-primary btn-sm" onClick={() => setShowAddNewgrupa(true)}>Dodaj grupu</button>
 
-                    <table className="table table-bordered table-striped table-hover table-sm mt-3">
+                    <table className="table table-bordered table-striped table-hover table-sm mt-3 table-dark">
                         <thead>
                             <tr>
                                 <th className="category-row-id">ID</th>
