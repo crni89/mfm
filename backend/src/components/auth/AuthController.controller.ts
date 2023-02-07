@@ -85,89 +85,89 @@ export default class AuthController extends BaseController {
         }
     }
 
-    public async userLogin(req: Request, res: Response) {
-        const data = req.body as IUserLoginDto;
+    // public async userLogin(req: Request, res: Response) {
+    //     const data = req.body as IUserLoginDto;
 
-        this.services.user.getByEmail(data.email)
-        .then(result => {
-            if (result === null) {
-                throw {
-                    status: 404,
-                    message: "Niste uneli dobro korisničko ime/šifru!"
-                };
-            }
+    //     this.services.user.getByEmail(data.email)
+    //     .then(result => {
+    //         if (result === null) {
+    //             throw {
+    //                 status: 404,
+    //                 message: "Niste uneli dobro korisničko ime/šifru!"
+    //             };
+    //         }
 
-            return result;
-        })
-        .then(user => {
-            if (!bcrypt.compareSync(data.password, user.passwordHash)) {
-                throw {
-                    status: 404,
-                    message: "Niste uneli dobro korisničko ime/šifru!"
-                };
-            }
+    //         return result;
+    //     })
+    //     .then(user => {
+    //         if (!bcrypt.compareSync(data.password, user.passwordHash)) {
+    //             throw {
+    //                 status: 404,
+    //                 message: "Niste uneli dobro korisničko ime/šifru!"
+    //             };
+    //         }
 
-            return user;
-        })
-        .then(user => {
-            if (!user.isActive) {
-                throw {
-                    status: 404,
-                    message: "Nalog nije aktivan!"
-                };
-            }
+    //         return user;
+    //     })
+    //     .then(user => {
+    //         if (!user.isActive) {
+    //             throw {
+    //                 status: 404,
+    //                 message: "Nalog nije aktivan!"
+    //             };
+    //         }
 
-            return user;
-        })
-        .then(user => {
-            const tokenData: ITokenData = {
-                role: "user",
-                id: user.userId,
-                identity: user.imePrezime,
-            };
+    //         return user;
+    //     })
+    //     .then(user => {
+    //         const tokenData: ITokenData = {
+    //             role: "user",
+    //             id: user.userId,
+    //             identity: user.imePrezime,
+    //         };
 
-            const authToken = jwt.sign(tokenData, DevConfig.auth.user.tokens.auth.keys.private, {
-                algorithm: DevConfig.auth.user.algorithm,
-                issuer: DevConfig.auth.user.issuer,
-                expiresIn: DevConfig.auth.user.tokens.auth.duration,
-            });
+    //         const authToken = jwt.sign(tokenData, DevConfig.auth.user.tokens.auth.keys.private, {
+    //             algorithm: DevConfig.auth.user.algorithm,
+    //             issuer: DevConfig.auth.user.issuer,
+    //             expiresIn: DevConfig.auth.user.tokens.auth.duration,
+    //         });
 
-            const refreshToken = jwt.sign(tokenData, DevConfig.auth.user.tokens.refresh.keys.private, {
-                algorithm: DevConfig.auth.user.algorithm,
-                issuer: DevConfig.auth.user.issuer,
-                expiresIn: DevConfig.auth.user.tokens.refresh.duration,
-            });
+    //         const refreshToken = jwt.sign(tokenData, DevConfig.auth.user.tokens.refresh.keys.private, {
+    //             algorithm: DevConfig.auth.user.algorithm,
+    //             issuer: DevConfig.auth.user.issuer,
+    //             expiresIn: DevConfig.auth.user.tokens.refresh.duration,
+    //         });
 
-            res.send({
-                authToken: authToken,
-                refreshToken: refreshToken,
-                id: user.userId,
-            });
-        })
-        .catch(error => {
-            setTimeout(() => {
-                res.status(error?.status ?? 500).send(error?.message);
-            }, 1500);
-        });
-    }
+    //         res.send({
+    //             authToken: authToken,
+    //             refreshToken: refreshToken,
+    //             id: user.userId,
+    //         });
+    //     })
+    //     .catch(error => {
+    //         setTimeout(() => {
+    //             res.status(error?.status ?? 500).send(error?.message);
+    //         }, 1500);
+    //     });
+    // }
 
-    userRefresh(req: Request, res: Response) {
-        const refreshTokenHeader: string = req.headers?.authorization ?? ""; // "Bearer TOKEN"
+    // userRefresh(req: Request, res: Response) {
+    //     const refreshTokenHeader: string = req.headers?.authorization ?? ""; // "Bearer TOKEN"
 
-        try {
-            const tokenData = AuthMiddleware.validateTokenAs(refreshTokenHeader, "user", "refresh");
+    //     try {
+    //         const tokenData = AuthMiddleware.validateTokenAs(refreshTokenHeader, "user", "refresh");
     
-            const authToken = jwt.sign(tokenData, DevConfig.auth.user.tokens.auth.keys.private, {
-                algorithm: DevConfig.auth.user.algorithm,
-                issuer: DevConfig.auth.user.issuer,
-                expiresIn: DevConfig.auth.user.tokens.auth.duration,
-            });
+    //         const authToken = jwt.sign(tokenData, DevConfig.auth.user.tokens.auth.keys.private, {
+    //             algorithm: DevConfig.auth.user.algorithm,
+    //             issuer: DevConfig.auth.user.issuer,
+    //             expiresIn: DevConfig.auth.user.tokens.auth.duration,
+    //         });
     
-            res.send({
-                authToken: authToken,
-            });
-        } catch (error) {
-            res.status(error?.status ?? 500).send(error?.message);
-        }
-    }
+    //         res.send({
+    //             authToken: authToken,
+    //         });
+    //     } catch (error) {
+    //         res.status(error?.status ?? 500).send(error?.message);
+    //     }
+    // }
 }

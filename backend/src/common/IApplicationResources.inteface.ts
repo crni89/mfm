@@ -1,6 +1,6 @@
 import * as mysql2 from "mysql2/promise";
 import DeteService from '../components/dete/DeteService.service';
-import UserService from "../components/user/UserService.service";
+// import UserService from "../components/user/UserService.service";
 import GrupaService from '../components/grupa/GrupaService.service';
 import AdministratorService from '../components/administrator/AdministratorService.service';
 import ObjekatService from '../components/objekat/ObjekatService.service';
@@ -13,7 +13,7 @@ import UplataService from '../components/uplata/UplataService.service';
 
 export interface IServices {
     dete: DeteService;
-    user: UserService;
+    // user: UserService;
     grupa: GrupaService;
     administrator: AdministratorService;
     objekat: ObjekatService;

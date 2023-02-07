@@ -8,7 +8,7 @@ import { DevConfig } from "./configs";
 import IApplicationResources from "./common/IApplicationResources.inteface";
 import fileUpload = require("express-fileupload");
 import DeteService from './components/dete/DeteService.service';
-import UserService from "./components/user/UserService.service";
+// import UserService from "./components/user/UserService.service";
 import GrupaService from './components/grupa/GrupaService.service';
 import AdministratorService from "./components/administrator/AdministratorService.service";
 import ObjekatService from './components/objekat/ObjekatService.service';
@@ -64,7 +64,7 @@ const applicationResources: IApplicationResources = {
     databaseConnection: db,
     services: {
         dete: null,
-        user: null,
+        // user: null,
         grupa: null,
         administrator: null,
         objekat: null,
@@ -78,7 +78,7 @@ const applicationResources: IApplicationResources = {
 };
 
 applicationResources.services.dete = new DeteService(applicationResources);
-applicationResources.services.user = new UserService(applicationResources);
+// applicationResources.services.user = new UserService(applicationResources);
 applicationResources.services.grupa = new GrupaService(applicationResources);
 applicationResources.services.administrator = new AdministratorService(applicationResources);
 applicationResources.services.objekat = new ObjekatService(applicationResources);

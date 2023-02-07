@@ -2,7 +2,7 @@ import IConfig from "./common/IConfig.interface";
 import { readFileSync } from "fs";
 import { MailConfigurationParameters } from "./config.mail";
 import AuthRouter from './components/auth/AuthRouter.router';
-import UserRouter from "./components/user/UserRouter.router";
+// import UserRouter from "./components/user/UserRouter.router";
 import AdministratorRouter from './components/administrator/AdministratorRouter.router';
 
 const DevConfig: IConfig = {
@@ -35,7 +35,7 @@ const DevConfig: IConfig = {
     },
     
     routers: [
-        new UserRouter(),
+        // new UserRouter(),
         new AuthRouter(),
         new AdministratorRouter(),
     ],
