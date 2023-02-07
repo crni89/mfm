@@ -13,13 +13,13 @@ export interface IResize {
         alpha: number,
     },
 }
-export interface IMailConfiguration {
-    host: string,
-    port: number,
-    email: string,
-    password: string,
-    debug: boolean,
-}
+// export interface IMailConfiguration {
+//     host: string,
+//     port: number,
+//     email: string,
+//     password: string,
+//     debug: boolean,
+// }
 
 
 export interface ITokenProperties {
@@ -70,7 +70,7 @@ interface IConfig {
     
     routers: IRouter[],
 
-    mail: IMailConfiguration,
+    // mail: IMailConfiguration,
 
     auth: {
         user: IAuthTokenOptions,

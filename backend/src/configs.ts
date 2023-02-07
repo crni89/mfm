@@ -40,13 +40,13 @@ const DevConfig: IConfig = {
         new AdministratorRouter(),
     ],
 
-    mail: {
-        host: "smtp.office365.com",
-        port: 587,
-        email: "",
-        password: "",
-        debug: true,
-    },
+    // mail: {
+    //     host: "smtp.office365.com",
+    //     port: 587,
+    //     email: "",
+    //     password: "",
+    //     debug: true,
+    // },
     auth: {
         administrator: {
             algorithm: "RS256",
@@ -130,6 +130,6 @@ const DevConfig: IConfig = {
     // },
 };
 
-DevConfig.mail = MailConfigurationParameters;
+// DevConfig.mail = MailConfigurationParameters;
 
 export  {DevConfig};
