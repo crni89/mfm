@@ -133,6 +133,7 @@ application.use((req, res) => {
 });
 
 application.listen(config.server.port);
+console.log(`Server running on port ${config.server.port}`)
 }
 
 process.on('uncaughtException', error => {
