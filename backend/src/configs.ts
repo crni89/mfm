@@ -1,6 +1,6 @@
 import IConfig from "./common/IConfig.interface";
 import { readFileSync } from "fs";
-import { MailConfigurationParameters } from "./config.mail";
+// import { MailConfigurationParameters } from "./config.mail";
 import AuthRouter from './components/auth/AuthRouter.router';
 // import UserRouter from "./components/user/UserRouter.router";
 import AdministratorRouter from './components/administrator/AdministratorRouter.router';
